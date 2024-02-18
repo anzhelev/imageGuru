@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
@@ -14,20 +14,63 @@
             <objects>
                 <viewController title="ImageList" id="BYZ-38-t0r" customClass="ImagesListViewController" customModule="imageGuru" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ff2-eV-1xl">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                                 <color key="backgroundColor" name="YP Black"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="376" id="hHg-nJ-kJB" customClass="ImagesListCell" customModule="imageGuru" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="50" width="414" height="376"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationWidth="0.0" reuseIdentifier="ImagesListCell" rowHeight="300" id="hHg-nJ-kJB" customClass="ImagesListCell" customModule="imageGuru" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="50" width="428" height="300"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="hHg-nJ-kJB" id="HMm-RQ-l5V">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="376"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="428" height="300"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="NzU-oc-zKi">
+                                                    <rect key="frame" x="16" y="4" width="396" height="292"/>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="16"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                                                    </userDefinedRuntimeAttributes>
+                                                </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cxu-9V-N3Y" userLabel="favoritesButton">
+                                                    <rect key="frame" x="368" y="4" width="44" height="44"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="44" id="6BT-nj-yno"/>
+                                                        <constraint firstAttribute="width" constant="44" id="dxm-SK-ggf"/>
+                                                    </constraints>
+                                                    <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                    <state key="normal" image="favorites_active"/>
+                                                </button>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13 июля 1981" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GLE-Rz-Dcp">
+                                                    <rect key="frame" x="24" y="272" width="82" height="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                    <color key="textColor" name="YP White"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
+                                            <color key="backgroundColor" name="YP Black"/>
+                                            <constraints>
+                                                <constraint firstAttribute="trailing" secondItem="NzU-oc-zKi" secondAttribute="trailing" constant="16" id="8UC-H0-YA5"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="trailing" secondItem="Cxu-9V-N3Y" secondAttribute="trailing" id="H5D-11-dgf"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="top" secondItem="HMm-RQ-l5V" secondAttribute="top" constant="4" id="KLS-wh-fow"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="leading" secondItem="HMm-RQ-l5V" secondAttribute="leading" constant="16" id="QhA-W9-cEE"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="bottom" secondItem="GLE-Rz-Dcp" secondAttribute="bottom" constant="8" id="WcN-TR-tjF"/>
+                                                <constraint firstItem="Cxu-9V-N3Y" firstAttribute="top" secondItem="NzU-oc-zKi" secondAttribute="top" id="ZlY-Lw-n0J"/>
+                                                <constraint firstAttribute="bottom" secondItem="NzU-oc-zKi" secondAttribute="bottom" constant="4" id="cP2-Ad-D1k"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GLE-Rz-Dcp" secondAttribute="trailing" constant="8" id="jzG-9K-Tbx"/>
+                                                <constraint firstItem="GLE-Rz-Dcp" firstAttribute="leading" secondItem="NzU-oc-zKi" secondAttribute="leading" constant="8" id="uDA-rW-SfB"/>
+                                            </constraints>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="cellPicture" destination="NzU-oc-zKi" id="o0p-bY-PeL"/>
+                                            <outlet property="dateLabel" destination="GLE-Rz-Dcp" id="GhJ-2w-ddo"/>
+                                            <outlet property="favoritesButton" destination="Cxu-9V-N3Y" id="fI4-qw-aoi"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                                 <connections>
@@ -46,7 +89,7 @@
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="tableView" destination="ff2-eV-1xl" id="JFl-jp-I8U"/>
+                        <outlet property="tableView" destination="ff2-eV-1xl" id="EtF-oK-eEJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -55,8 +98,13 @@
         </scene>
     </scenes>
     <resources>
+        <image name="0" width="200" height="132"/>
+        <image name="favorites_active" width="42" height="42"/>
         <namedColor name="YP Black">
             <color red="0.10199999809265137" green="0.10599999874830246" blue="0.13300000131130219" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="YP White">
+            <color red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
