@@ -38,7 +38,8 @@ class ImagesListViewController: UIViewController {
         cell.favoritesButton.setImage(favoriteImage, for: .normal)
     }
     
-    private func dateToString(_ date: Date) -> String { //  функция форматирования даты в строку
+    ///  функция форматирования даты в строку
+    private func dateToString(_ date: Date) -> String {
         let df = DateFormatter()
         df.dateFormat = "dd MMMM yyyy"
         return df.string(from: date)
