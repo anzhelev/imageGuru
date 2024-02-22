@@ -9,6 +9,7 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
+    @IBOutlet var gradientView: UIView!
     @IBOutlet var cellPicture: UIImageView!
     @IBOutlet var favoritesButton: UIButton!
     @IBOutlet var dateLabel: UILabel!
