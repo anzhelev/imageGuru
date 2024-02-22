@@ -37,6 +37,24 @@
                                                         <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                                     </userDefinedRuntimeAttributes>
                                                 </imageView>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Jyv-jJ-rvZ" userLabel="gragientView">
+                                                    <rect key="frame" x="16" y="266" width="396" height="30"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13 июля 1981" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GLE-Rz-Dcp">
+                                                            <rect key="frame" x="8" y="4" width="82" height="18"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                                            <color key="textColor" name="YP White"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="30" id="Zbc-Ve-CF8"/>
+                                                        <constraint firstItem="GLE-Rz-Dcp" firstAttribute="top" secondItem="Jyv-jJ-rvZ" secondAttribute="top" constant="4" id="j01-0T-17C"/>
+                                                        <constraint firstItem="GLE-Rz-Dcp" firstAttribute="leading" secondItem="Jyv-jJ-rvZ" secondAttribute="leading" constant="8" id="rvQ-Cs-nQw"/>
+                                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GLE-Rz-Dcp" secondAttribute="trailing" constant="100" id="vmy-Ld-Ngm"/>
+                                                        <constraint firstAttribute="bottom" secondItem="GLE-Rz-Dcp" secondAttribute="bottom" constant="8" id="ynz-2O-6gj"/>
+                                                    </constraints>
+                                                </view>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cxu-9V-N3Y" userLabel="favoritesButton">
                                                     <rect key="frame" x="368" y="4" width="44" height="44"/>
                                                     <constraints>
@@ -46,30 +64,26 @@
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="favorites_active"/>
                                                 </button>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="13 июля 1981" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GLE-Rz-Dcp">
-                                                    <rect key="frame" x="24" y="272" width="82" height="16"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                    <color key="textColor" name="YP White"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
                                             </subviews>
                                             <color key="backgroundColor" name="YP Black"/>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="NzU-oc-zKi" secondAttribute="trailing" constant="16" id="8UC-H0-YA5"/>
+                                                <constraint firstItem="Jyv-jJ-rvZ" firstAttribute="leading" secondItem="NzU-oc-zKi" secondAttribute="leading" id="GH8-5X-768"/>
                                                 <constraint firstItem="NzU-oc-zKi" firstAttribute="trailing" secondItem="Cxu-9V-N3Y" secondAttribute="trailing" id="H5D-11-dgf"/>
                                                 <constraint firstItem="NzU-oc-zKi" firstAttribute="top" secondItem="HMm-RQ-l5V" secondAttribute="top" constant="4" id="KLS-wh-fow"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="bottom" secondItem="Jyv-jJ-rvZ" secondAttribute="bottom" id="MAh-Lz-nhb"/>
                                                 <constraint firstItem="NzU-oc-zKi" firstAttribute="leading" secondItem="HMm-RQ-l5V" secondAttribute="leading" constant="16" id="QhA-W9-cEE"/>
-                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="bottom" secondItem="GLE-Rz-Dcp" secondAttribute="bottom" constant="8" id="WcN-TR-tjF"/>
                                                 <constraint firstItem="Cxu-9V-N3Y" firstAttribute="top" secondItem="NzU-oc-zKi" secondAttribute="top" id="ZlY-Lw-n0J"/>
                                                 <constraint firstAttribute="bottom" secondItem="NzU-oc-zKi" secondAttribute="bottom" constant="4" id="cP2-Ad-D1k"/>
-                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="GLE-Rz-Dcp" secondAttribute="trailing" constant="8" id="jzG-9K-Tbx"/>
-                                                <constraint firstItem="GLE-Rz-Dcp" firstAttribute="leading" secondItem="NzU-oc-zKi" secondAttribute="leading" constant="8" id="uDA-rW-SfB"/>
+                                                <constraint firstItem="NzU-oc-zKi" firstAttribute="trailing" secondItem="Jyv-jJ-rvZ" secondAttribute="trailing" id="jZC-v2-RRO"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" name="YP Black"/>
                                         <connections>
                                             <outlet property="cellPicture" destination="NzU-oc-zKi" id="o0p-bY-PeL"/>
                                             <outlet property="dateLabel" destination="GLE-Rz-Dcp" id="GhJ-2w-ddo"/>
                                             <outlet property="favoritesButton" destination="Cxu-9V-N3Y" id="fI4-qw-aoi"/>
+                                            <outlet property="gradientView" destination="Jyv-jJ-rvZ" id="iMC-AT-Tv6"/>
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>

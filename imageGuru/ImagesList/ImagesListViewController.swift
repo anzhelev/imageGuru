@@ -6,7 +6,7 @@
 //
 import UIKit
 
-class ImagesListViewController: UIViewController {
+final class ImagesListViewController: UIViewController {
     
     // MARK: - IB Outlets
     @IBOutlet private var tableView: UITableView!
@@ -36,6 +36,15 @@ class ImagesListViewController: UIViewController {
         let isFavorite = indexPath.row % 2 == 0
         let favoriteImage = isFavorite ? UIImage(named: "favorites_active") : UIImage(named: "favorites_no_active")
         cell.favoritesButton.setImage(favoriteImage, for: .normal)
+        
+        // добавляем градиент на поле с датой
+        cell.gradientView.layer.masksToBounds = true
+        cell.gradientView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
+        cell.gradientView.layer.cornerRadius = 16
+        let gradient = CAGradientLayer()
+        gradient.frame = cell.gradientView.bounds
+        gradient.colors = [UIColor.igGradientAlpha0.cgColor, UIColor.igGradientAlpha20.cgColor]
+        cell.gradientView.layer.insertSublayer(gradient, at: 0)
     }
     
     ///  функция форматирования даты в строку
