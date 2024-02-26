@@ -15,6 +15,11 @@ final class ImagesListViewController: UIViewController {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
+    // MARK: - Override Properties
+    override var preferredStatusBarStyle: UIStatusBarStyle { // меняем цвет StatusBar на белый
+        return .lightContent
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
