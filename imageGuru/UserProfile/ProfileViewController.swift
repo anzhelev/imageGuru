@@ -13,10 +13,6 @@ final class ProfileViewController: UIViewController {
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     
-    override var preferredStatusBarStyle: UIStatusBarStyle { // меняем цвет StatusBar на белый
-        return .lightContent
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         

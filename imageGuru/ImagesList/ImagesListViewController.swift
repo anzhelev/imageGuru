@@ -15,11 +15,6 @@ final class ImagesListViewController: UIViewController {
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     private let photosName: [String] = Array(0..<20).map{ "\($0)" }
     
-    // MARK: - Override Properties
-    override var preferredStatusBarStyle: UIStatusBarStyle { // меняем цвет StatusBar на белый
-        return .lightContent
-    }
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,12 +23,13 @@ final class ImagesListViewController: UIViewController {
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showSingleImageSegueIdentifier {
-            let viewController = segue.destination as! SingleImageViewController
-            let indexPath = sender as! IndexPath
-            let image = UIImage(named: photosName[indexPath.row])
-            viewController.image = image
-        } else {
-            super.prepare(for: segue, sender: sender)
+            if let viewController = segue.destination as? SingleImageViewController,
+               let indexPath = sender as? IndexPath {
+                let image = UIImage(named: photosName[indexPath.row])
+                viewController.image = image
+            } else {
+                super.prepare(for: segue, sender: sender)
+            }
         }
     }
     

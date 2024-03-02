@@ -24,12 +24,7 @@ final class SingleImageViewController: UIViewController {
             }
         }
     }
-    
-    // MARK: - Override Properties
-    override var preferredStatusBarStyle: UIStatusBarStyle { // меняем цвет StatusBar на белый
-        return .lightContent
-    }
-    
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
