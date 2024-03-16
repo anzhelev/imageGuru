@@ -8,6 +8,10 @@ import UIKit
 
 final class SingleImageViewController: UIViewController {
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
+    
     // MARK: - IB Outlets
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet private var imageView: UIImageView!
@@ -24,7 +28,7 @@ final class SingleImageViewController: UIViewController {
             }
         }
     }
-
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()

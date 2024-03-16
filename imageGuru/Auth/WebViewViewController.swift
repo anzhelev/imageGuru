@@ -4,16 +4,18 @@
 //
 //  Created by Andrey Zhelev on 07.03.2024.
 //
-
 import UIKit
 import WebKit
 
 protocol WebViewViewControllerDelegate: AnyObject {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String)
-    func webViewViewControllerDidCancel(_ vc: WebViewViewController)
 }
 
 final class WebViewViewController: UIViewController {
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .darkContent
+    }
     
     // MARK: - IB Outlets
     @IBOutlet private var webView: WKWebView!
@@ -94,7 +96,7 @@ extension WebViewViewController: WKNavigationDelegate {
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
     ) {
         if let code = code(from: navigationAction) {
-            //TODO: process code
+            delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
         } else {
             decisionHandler(.allow)
