@@ -80,6 +80,7 @@ final class WebViewViewController: UIViewController {
             URLQueryItem(name: "scope", value: Constants.AccessScope)
         ]
         guard let url = urlComponents.url else {
+            print("CONSOLE func loadAuthView Ошибка создания URL")
             return
         }
         let request = URLRequest(url: url)

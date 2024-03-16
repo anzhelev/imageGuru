@@ -34,7 +34,7 @@ final class OAuth2Service {
                 + "&&grant_type=authorization_code",
                 relativeTo: baseURL
               ) else {
-            print("CONSOLE func fetchOAuthToken Ошибка создания URL")
+            print("CONSOLE func makeOAuthTokenRequest Ошибка создания URL")
             return URLRequest(url: Constants.DefaultBaseURL)
         }
         var request = URLRequest(url: url)
