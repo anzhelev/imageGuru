@@ -8,11 +8,13 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    // MARK: - Private Properties
     private var profileImageView: UIImageView?
     private var userNameLabel: UILabel?
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -72,6 +74,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
+    // MARK: - IBAction
     @objc func logoutButtonAction() {
         guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
         profileImageView.image = UIImage(named: "user_profile_picture_unautorized")

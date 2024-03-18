@@ -8,13 +8,15 @@
 import Foundation
 
 struct OAuthTokenResponseBody: Decodable {
-    var access_token: String
+    var accessToken: String
 }
 
 final class OAuth2Service {
-    static let shared = OAuth2Service()
-    private init() {}
     
+    // MARK: - Public Properties
+    static let shared = OAuth2Service()
+    
+    // MARK: - Private Properties
     private enum FetchOAuthToken: Error {
         case URLSessionDataTaskError
         case tokenRequestError
@@ -22,29 +24,16 @@ final class OAuth2Service {
         case JSONDecodeError
     }
     
-    private func makeOAuthTokenRequest(code: String) -> URLRequest {
-        
-        guard let baseURL = URL(string: "https://unsplash.com"),
-              let url = URL(
-                string: "/oauth/token"
-                + "?client_id=\(Constants.AccessKey)"
-                + "&&client_secret=\(Constants.SecretKey)"
-                + "&&redirect_uri=\(Constants.RedirectURI)"
-                + "&&code=\(code)"
-                + "&&grant_type=authorization_code",
-                relativeTo: baseURL
-              ) else {
-            print("CONSOLE func makeOAuthTokenRequest Ошибка создания URL")
-            return URLRequest(url: Constants.DefaultBaseURL)
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        return request
-    }
+    // MARK: - Initializers
+    private init() {}
     
+    // MARK: - Public Methods
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         
-        let request = makeOAuthTokenRequest(code: code)
+        guard let request = makeOAuthTokenRequest(code: code) else {
+            print("CONSOLE func fetchOAuthToken Ошибка создания запроса токена")
+            return
+        }
         
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             
@@ -65,13 +54,36 @@ final class OAuth2Service {
                 return
             }
             do {
-                let token = try JSONDecoder().decode(OAuthTokenResponseBody.self, from: data)
-                completion(.success(token.access_token))
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let token = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+                completion(.success(token.accessToken))
             } catch _ {
                 completion(.failure(FetchOAuthToken.JSONDecodeError))
                 return
             }
         }
         task.resume()
+    }
+    
+    // MARK: - Private Methods
+    private func makeOAuthTokenRequest(code: String) -> URLRequest? {
+        
+        guard let baseURL = URL(string: "https://unsplash.com"),
+              let url = URL(
+                string: "/oauth/token"
+                + "?client_id=\(Constants.accessKey)"
+                + "&&client_secret=\(Constants.secretKey)"
+                + "&&redirect_uri=\(Constants.redirectURI)"
+                + "&&code=\(code)"
+                + "&&grant_type=authorization_code",
+                relativeTo: baseURL
+              ) else {
+            print("CONSOLE func makeOAuthTokenRequest Ошибка создания URL")
+            return nil
+        }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        return request
     }
 }

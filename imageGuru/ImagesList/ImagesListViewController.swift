@@ -8,12 +8,13 @@ import UIKit
 
 final class ImagesListViewController: UIViewController {
     
+    // MARK: - IB Outlets
+    @IBOutlet private var tableView: UITableView!
+    
+    // MARK: - Visual Components
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
-    
-    // MARK: - IB Outlets
-    @IBOutlet private var tableView: UITableView!
     
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
@@ -68,7 +69,7 @@ final class ImagesListViewController: UIViewController {
     }
 }
 
-// MARK: - Extentions
+// MARK: - UITableViewDataSource
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return photosName.count
@@ -85,6 +86,7 @@ extension ImagesListViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)

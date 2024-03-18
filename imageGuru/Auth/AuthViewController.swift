@@ -12,13 +12,20 @@ protocol AuthViewControllerDelegate: AnyObject {
 
 final class AuthViewController: UIViewController {
     
+    // MARK: - Visual Components
     override var preferredStatusBarStyle: UIStatusBarStyle {
         .lightContent
     }
     
-    // MARK: - Properties
-    private let showWebWievControllerSegueIdentifier = "ShowWebView"
+    // MARK: - Public Properties
     weak var delegate: AuthViewControllerDelegate?
+    
+    // MARK: - Private Properties
+    private let showWebWievControllerSegueIdentifier = "ShowWebView"
+    private let oAuth2Service = OAuth2Service.shared
+    private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let splashViewController = SplashViewController()
+    
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -46,10 +53,26 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor.igBlack
     }
+        
+    private func fetchOAuthToken(_ code: String) {
+        oAuth2Service.fetchOAuthToken(code) {result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let token):
+                    self.oauth2TokenStorage.token = token
+                    self.splashViewController.switchToTabBarController()
+                case .failure(let error):
+                    print("CONSOLE func fetchOAuthToken ", error.localizedDescription)
+                }
+            }
+        }
+    }
 }
 
+// MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self, didAuthenticateWithCode: code)
+        fetchOAuthToken(code)
     }
 }
