@@ -5,9 +5,10 @@
 //  Created by Andrey Zhelev on 07.03.2024.
 //
 import UIKit
+import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
-    func authViewController(_ vc: AuthViewController, didAuthenticateWithCode code: String)
+    func authViewController(_ vc: AuthViewController)
 }
 
 final class AuthViewController: UIViewController {
@@ -57,6 +58,8 @@ final class AuthViewController: UIViewController {
     private func fetchOAuthToken(_ code: String) {
         oAuth2Service.fetchOAuthToken(code) {result in
             DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+//                print("CONSOLE func fetchOAuthToken ", self)
                 switch result {
                 case .success(let token):
                     self.oauth2TokenStorage.token = token
@@ -72,7 +75,8 @@ final class AuthViewController: UIViewController {
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        delegate?.authViewController(self, didAuthenticateWithCode: code)
+        delegate?.authViewController(self)
+        ProgressHUD.animate()
         fetchOAuthToken(code)
     }
 }
