@@ -18,27 +18,41 @@ final class OAuth2Service {
     
     // MARK: - Private Properties
     private enum FetchOAuthToken: Error {
-        case URLSessionDataTaskError
+        case invalidRequest
+        case dataTaskError
         case tokenRequestError
         case dataError
         case JSONDecodeError
     }
+    
+    var task: URLSessionTask?
+    var lastCode: String?
     
     // MARK: - Initializers
     private init() {}
     
     // MARK: - Public Methods
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        if lastCode == code {
+            completion(.failure(FetchOAuthToken.invalidRequest))
+            return
+        } else if task != nil {
+            task?.cancel()
+        }
+        
+        lastCode = code
         
         guard let request = makeOAuthTokenRequest(code: code) else {
-            print("CONSOLE func fetchOAuthToken Ошибка создания запроса токена")
+            completion(.failure(FetchOAuthToken.invalidRequest))
             return
         }
         
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             
             if error != nil {
-                completion(.failure(FetchOAuthToken.URLSessionDataTaskError))
+                completion(.failure(FetchOAuthToken.dataTaskError))
                 return
             }
             
@@ -63,6 +77,7 @@ final class OAuth2Service {
                 return
             }
         }
+        self.task = task
         task.resume()
     }
     
@@ -79,6 +94,7 @@ final class OAuth2Service {
                 + "&&grant_type=authorization_code",
                 relativeTo: baseURL
               ) else {
+            assertionFailure("Failed to create URL")
             print("CONSOLE func makeOAuthTokenRequest Ошибка создания URL")
             return nil
         }

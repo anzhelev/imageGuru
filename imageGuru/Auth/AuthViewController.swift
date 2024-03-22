@@ -54,14 +54,17 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor.igBlack
     }
-        
+    
     private func fetchOAuthToken(_ code: String) {
         oAuth2Service.fetchOAuthToken(code) {result in
             DispatchQueue.main.async {
-                ProgressHUD.dismiss()
-//                print("CONSOLE func fetchOAuthToken ", self)
+                UIBlockingProgressHUD.dismiss()
+                //                ProgressHUD.dismiss()
+                //                print("CONSOLE func fetchOAuthToken ", self)
                 switch result {
                 case .success(let token):
+                    self.oAuth2Service.task = nil
+                    self.oAuth2Service.lastCode = nil
                     self.oauth2TokenStorage.token = token
                     self.splashViewController.switchToTabBarController()
                 case .failure(let error):
@@ -76,7 +79,8 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self)
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
+//                ProgressHUD.animate()
         fetchOAuthToken(code)
     }
 }
