@@ -59,14 +59,13 @@ final class AuthViewController: UIViewController {
         oAuth2Service.fetchOAuthToken(code) {result in
             DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
-                //                ProgressHUD.dismiss()
-                //                print("CONSOLE func fetchOAuthToken ", self)
                 switch result {
                 case .success(let token):
                     self.oAuth2Service.task = nil
                     self.oAuth2Service.lastCode = nil
                     self.oauth2TokenStorage.token = token
                     self.splashViewController.switchToTabBarController()
+                    print("CONSOLE func fetchOAuthToken ", token)
                 case .failure(let error):
                     print("CONSOLE func fetchOAuthToken ", error.localizedDescription)
                 }
@@ -80,7 +79,6 @@ extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self)
         UIBlockingProgressHUD.show()
-//                ProgressHUD.animate()
         fetchOAuthToken(code)
     }
 }

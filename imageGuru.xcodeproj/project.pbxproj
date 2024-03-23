@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D4040BF02BAECEAC00E965F0 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */; };
 		D4176E632B6F9FAE0011F179 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E622B6F9FAE0011F179 /* AppDelegate.swift */; };
 		D4176E652B6F9FAE0011F179 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E642B6F9FAE0011F179 /* SceneDelegate.swift */; };
 		D4176E672B6F9FAE0011F179 /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E662B6F9FAE0011F179 /* ImagesListViewController.swift */; };
@@ -30,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		D4176E5F2B6F9FAE0011F179 /* imageGuru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imageGuru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4176E622B6F9FAE0011F179 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D4176E642B6F9FAE0011F179 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				D4A7F1DD2B88AA8100675A89 /* ProfileViewController.swift */,
+				D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */,
 			);
 			path = UserProfile;
 			sourceTree = "<group>";
@@ -243,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D4F90A162BA22BE40042AA47 /* OAuth2TokenStorage.swift in Sources */,
+				D4040BF02BAECEAC00E965F0 /* ProfileService.swift in Sources */,
 				D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */,
 				D4A7F1DE2B88AA8100675A89 /* ProfileViewController.swift in Sources */,
 				D4176E672B6F9FAE0011F179 /* ImagesListViewController.swift in Sources */,
