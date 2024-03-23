@@ -12,7 +12,12 @@ final class SingleImageViewController: UIViewController {
     @IBOutlet var scrollView: UIScrollView!
     @IBOutlet private var imageView: UIImageView!
     
-    // MARK: - Private Properties
+    // MARK: - Visual Components
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        .lightContent
+    }
+    
+    // MARK: - Public Properties
     var image: UIImage? {
         didSet {
             guard isViewLoaded else {
@@ -24,7 +29,7 @@ final class SingleImageViewController: UIViewController {
             }
         }
     }
-
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,6 +57,7 @@ final class SingleImageViewController: UIViewController {
         }
     }
     
+    // MARK: - Private methods
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
         let minZoomScale = scrollView.minimumZoomScale
         let maxZoomScale = scrollView.maximumZoomScale
@@ -71,6 +77,7 @@ final class SingleImageViewController: UIViewController {
     }
 }
 
+// MARK: - UIScrollViewDelegate
 extension SingleImageViewController: UIScrollViewDelegate {
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         imageView

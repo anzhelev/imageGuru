@@ -8,11 +8,13 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     
+    // MARK: - Private Properties
     private var profileImageView: UIImageView?
     private var userNameLabel: UILabel?
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -26,7 +28,7 @@ final class ProfileViewController: UIViewController {
         
         let userNameLabel = UILabel()
         userNameLabel.text = "Екатерина Новикова"
-        userNameLabel.font = .systemFont(ofSize: 23, weight: .bold)
+        userNameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         userNameLabel.textColor = .igWhite
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userNameLabel)
@@ -34,7 +36,7 @@ final class ProfileViewController: UIViewController {
         
         let userLoginLabel = UILabel()
         userLoginLabel.text = "@ekaterina_nov"
-        userLoginLabel.font = .systemFont(ofSize: 13, weight: .regular)
+        userLoginLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userLoginLabel.textColor = .igGray
         userLoginLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userLoginLabel)
@@ -42,7 +44,7 @@ final class ProfileViewController: UIViewController {
         
         let userDescriptionLabel = UILabel()
         userDescriptionLabel.text = "Hello, world!"
-        userDescriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
+        userDescriptionLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userDescriptionLabel.textColor = .igWhite
         userDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userDescriptionLabel)
@@ -72,6 +74,7 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
+    // MARK: - IBAction
     @objc func logoutButtonAction() {
         guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
         profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
