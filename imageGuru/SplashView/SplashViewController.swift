@@ -17,6 +17,7 @@ final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private var tockenCheckIsNeeded = true
+    private let userProfile = ProfileService.profileService
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
@@ -24,6 +25,8 @@ final class SplashViewController: UIViewController {
         
         if tockenCheckIsNeeded {
             tokenCheck()
+        } else {
+            userProfile.updateProfileDetails()
         }
     }
     
@@ -52,6 +55,7 @@ final class SplashViewController: UIViewController {
     private func tokenCheck() {
         tockenCheckIsNeeded = false
         if oauth2TokenStorage.token != nil {
+            userProfile.updateProfileDetails()
             switchToTabBarController()
         } else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
