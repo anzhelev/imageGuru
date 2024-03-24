@@ -21,7 +21,6 @@ final class SplashViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        //        userProfile.updateProfileDetails(userToken: "fvq_fBfeP7UsrgMQ3LXDBew7AOh99pVjLyMHUvMLvSk")
         tokenCheck()
     }
     

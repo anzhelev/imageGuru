@@ -245,7 +245,7 @@ final class ProfileService {
 
         var request = URLRequest(url: url)
         
-        request.setValue("Bearer fvq_fBfeP7UsrgMQ3LXDBew7AOh99pVjLyMHUvMLvSk", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
     
         print("CONSOLE func makeUserProfileRequest: ", request.url as Any, token)
         request.httpMethod = "GET"
