@@ -51,11 +51,10 @@ final class SplashViewController: UIViewController {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
             return
         }
-        if userProfile.profile?.username == "" {
+        if userProfile.profile.username == "" {
             userProfile.updateProfileDetails(userToken: token)
-        } else {
-            print("CONSOLE ", userProfile.profile?.username as Any)
-            switchToTabBarController()}
+        }
+            switchToTabBarController()
     }
 }
 

@@ -28,8 +28,12 @@ final class ProfileViewController: UIViewController {
         self.profileImageView = profileImageView
         
         let userNameLabel = UILabel()
-        userNameLabel.text = "Екатерина Новикова"
-        userNameLabel.text = userProfile.profile?.name
+        if let userLastName = userProfile.profile.lastName {
+            userNameLabel.text = "\(userProfile.profile.firstName) \(userLastName)"
+        }
+        else {
+            userNameLabel.text = userProfile.profile.firstName
+        }
         userNameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         userNameLabel.textColor = .igWhite
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -37,8 +41,7 @@ final class ProfileViewController: UIViewController {
         self.userNameLabel = userNameLabel
         
         let userLoginLabel = UILabel()
-        userLoginLabel.text = "@ekaterina_nov"
-        userLoginLabel.text = userProfile.profile?.username
+        userLoginLabel.text = userProfile.profile.loginName
         userLoginLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userLoginLabel.textColor = .igGray
         userLoginLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -46,8 +49,7 @@ final class ProfileViewController: UIViewController {
         self.userLoginLabel = userLoginLabel
         
         let userDescriptionLabel = UILabel()
-        userDescriptionLabel.text = "Hello, world!"
-        userDescriptionLabel.text = userProfile.profile?.bio ?? "пусто"
+        userDescriptionLabel.text = userProfile.profile.bio ?? "пусто"
         userDescriptionLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userDescriptionLabel.textColor = .igWhite
         userDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
