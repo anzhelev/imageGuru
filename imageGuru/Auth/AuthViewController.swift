@@ -64,7 +64,8 @@ final class AuthViewController: UIViewController {
                     self.oAuth2Service.task = nil
                     self.oAuth2Service.lastCode = nil
                     self.oauth2TokenStorage.token = token
-                    self.splashViewController.switchToTabBarController()
+//                    self.splashViewController.tokenCheck()
+//                    self.splashViewController.switchToTabBarController()
                     print("CONSOLE func fetchOAuthToken ", token)
                 case .failure(let error):
                     print("CONSOLE func fetchOAuthToken ", error.localizedDescription)

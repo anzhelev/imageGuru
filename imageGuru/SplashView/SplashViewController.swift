@@ -16,18 +16,13 @@ final class SplashViewController: UIViewController {
     // MARK: - Private Properties
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
-    private var tockenCheckIsNeeded = true
     private let userProfile = ProfileService.profileService
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        if tockenCheckIsNeeded {
-            tokenCheck()
-        } else {
-            userProfile.updateProfileDetails()
-        }
+        //        userProfile.updateProfileDetails(userToken: "fvq_fBfeP7UsrgMQ3LXDBew7AOh99pVjLyMHUvMLvSk")
+        tokenCheck()
     }
     
     // MARK: - Public Methods
@@ -52,14 +47,16 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    private func tokenCheck() {
-        tockenCheckIsNeeded = false
-        if oauth2TokenStorage.token != nil {
-            userProfile.updateProfileDetails()
-            switchToTabBarController()
-        } else {
+    func tokenCheck() {
+        guard let token = oauth2TokenStorage.token else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            return
         }
+        if userProfile.profile?.username == "" {
+            userProfile.updateProfileDetails(userToken: token)
+        } else {
+            print("CONSOLE ", userProfile.profile?.username as Any)
+            switchToTabBarController()}
     }
 }
 

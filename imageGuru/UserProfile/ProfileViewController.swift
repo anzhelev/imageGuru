@@ -29,7 +29,7 @@ final class ProfileViewController: UIViewController {
         
         let userNameLabel = UILabel()
         userNameLabel.text = "Екатерина Новикова"
-        userNameLabel.text = userProfile.profile.name
+        userNameLabel.text = userProfile.profile?.name
         userNameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         userNameLabel.textColor = .igWhite
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ final class ProfileViewController: UIViewController {
         
         let userLoginLabel = UILabel()
         userLoginLabel.text = "@ekaterina_nov"
-        userLoginLabel.text = userProfile.profile.username
+        userLoginLabel.text = userProfile.profile?.username
         userLoginLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userLoginLabel.textColor = .igGray
         userLoginLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -47,7 +47,7 @@ final class ProfileViewController: UIViewController {
         
         let userDescriptionLabel = UILabel()
         userDescriptionLabel.text = "Hello, world!"
-        userDescriptionLabel.text = userProfile.profile.bio ?? "пусто"
+        userDescriptionLabel.text = userProfile.profile?.bio ?? "пусто"
         userDescriptionLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userDescriptionLabel.textColor = .igWhite
         userDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false

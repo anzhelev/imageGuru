@@ -60,10 +60,8 @@ final class ProfileService {
         case JSONDecodeError
     }
     
-    //    private let splashViewController = SplashViewController()
-    private let oauth2TokenStorage = OAuth2TokenStorage()
-    private(set) var profile: Profile
-    private var fetchProfileTask: URLSessionTask?
+    private(set) var profile: Profile?
+     var fetchProfileTask: URLSessionTask?
     
     
     // MARK: - Initializers
@@ -72,17 +70,31 @@ final class ProfileService {
     }
     
     // MARK: - Public Methods
-    func updateProfileDetails() {
-        self.fetchUserProfile() {result in
+    func updateProfileDetails(userToken: String) {
+        self.fetchUserProfileData(token: userToken) {result in
             DispatchQueue.main.async {
-                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case .success(let profile):
-                    self.profile = profile
                     self.fetchProfileTask = nil
-                    //                    self.splashViewController.switchToTabBarController()
+                    self.profile = profile
+                    print("CONSOLE ", self.profile as Any)
+                    UIBlockingProgressHUD.dismiss()
+//                    self.fetchUserProfilePicture(username: profile.username, token: userToken) {result in
+//                        DispatchQueue.main.async {
+//                            UIBlockingProgressHUD.dismiss()
+//                            switch result {
+//                            case .success(let profile):
+//                                self.profile.smallProfileImage = profile.smallProfileImage
+//                                print("CONSOLE ", self.profile)
+//                                self.fetchProfileTask = nil
+//                            case .failure(let error):
+//                                print("CONSOLE func fetchUserProfilePicture: ", error.localizedDescription)
+//                            }
+//                        }
+//                    }
                 case .failure(let error):
-                    print("CONSOLE func updateProfileDetails: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfileData: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfileData: Ошибка при запросе общих данных пользователя")
                 }
             }
         }
@@ -90,41 +102,46 @@ final class ProfileService {
     
     
     // MARK: - Private Methods
-    private func fetchUserProfile(completion: @escaping (Result<Profile, Error>) -> Void) {
+    /// функция получения общих данных профиля пользователя
+    private func fetchUserProfileData(token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-        if fetchProfileTask != nil {
+        if (fetchProfileTask != nil) {
             fetchProfileTask?.cancel()
+            print("CONSOLE func fetchUserProfileData: Ошибка - повторный запрос")
         }
         
         var userProfile = Profile(
-            username: "anzhelev",
+            username: "",
             name: "",
             loginName: ""
         )
         
         let userProfileRequestUrl = "https://api.unsplash.com/me"
         
-        guard let request = makeUserProfileDataRequest(userProfileRequestUrl) else {
+        
+        guard let request = makeUserProfileDataRequest(token: token, url: userProfileRequestUrl) else {
+            print("CONSOLE func fetchUserProfileData: ошибка 0")
             completion(.failure(FetchProfileData.invalidRequest))
             return
         }
-        
-        var fetchProfileTask = URLSession.shared.dataTask(with: request) {data, response, error in
-            
+        print("CONSOLE func fetchUserProfileData: Запрашиваем данные пользователя", request.allHTTPHeaderFields as Any)
+        let fetchProfileTask = URLSession.shared.dataTask(with: request) {data, response, error in
+            print("CONSOLE func fetchUserProfileData: Данные профиля пользователя запрошены")
             if error != nil {
-                print("CONSOLE func updateProfileDetails: ошибка 1")
+                print("CONSOLE func fetchUserProfileData: ошибка 1", error as Any)
                 completion(.failure(FetchProfileData.dataTaskError))
                 return
             }
-            
+            print("CONSOLE func fetchUserProfileData: Ошибки 1 не было")
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
-                print("CONSOLE func updateProfileDetails: ошибка 2")
+                print("CONSOLE func fetchUserProfileData: ", response as Any)
+                print("CONSOLE func fetchUserProfileData: ошибка 2 ", response.statusCode)
                 completion(.failure(FetchProfileData.tokenRequestError))
                 return
             }
-            
+            print("CONSOLE func fetchUserProfileData: ", response as Any)
             guard let data = data
             else {
                 completion(.failure(FetchProfileData.dataError))
@@ -142,40 +159,55 @@ final class ProfileService {
                 userProfile.bio = profileData.bio
                 
             } catch _ {
-                print("CONSOLE func updateProfileDetails: ошибка 3")
+                print("CONSOLE func fetchUserProfileData: ошибка 3")
                 completion(.failure(FetchProfileData.JSONDecodeError))
                 return
             }
         }
-        
+//        self.fetchProfileTask = fetchProfileTask
         fetchProfileTask.resume()
+    }
+    
+    /// функция получения фото профиля пользователя
+    private func fetchUserProfilePicture(username: String, token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
+        assert(Thread.isMainThread)
         
-        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(userProfile.username)"
+//        if fetchProfileTask != nil {
+//            fetchProfileTask?.cancel()
+//        }
+//        
+        var userProfile = Profile(
+            username: username,
+            name: "",
+            loginName: ""
+        )
         
-        guard let request = makeUserProfileDataRequest(userProfileImageRequestUrl) else {
-            print("CONSOLE func updateProfileDetails: ошибка 4")
+        let userProfileImageRequestUrl = "https://api.unsplash.com/users \(username)"
+        
+        guard let request = makeUserProfileDataRequest(token: token, url: userProfileImageRequestUrl) else {
+            print("CONSOLE func fetchUserProfileData: ошибка 4")
             completion(.failure(FetchProfileData.invalidRequest))
             return
         }
         
-        fetchProfileTask = URLSession.shared.dataTask(with: request) {data, response, error in
+        _ = URLSession.shared.dataTask(with: request) {data, response, error in
             
             if error != nil {
-                print("CONSOLE func updateProfileDetails: ошибка 5")
+                print("CONSOLE func fetchUserProfileData: ошибка 5")
                 completion(.failure(FetchProfileData.dataTaskError))
                 return
             }
             
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
-                print("CONSOLE func updateProfileDetails: ошибка 6")
+                print("CONSOLE func fetchUserProfileData: ошибка 6")
                 completion(.failure(FetchProfileData.tokenRequestError))
                 return
             }
             
             guard let data = data
             else {
-                print("CONSOLE func updateProfileDetails: ошибка 7")
+                print("CONSOLE func fetchUserProfileData: ошибка 7")
                 completion(.failure(FetchProfileData.dataError))
                 return
             }
@@ -185,41 +217,38 @@ final class ProfileService {
                 let profileData = try decoder.decode(ProfileImageRequestResult.self, from: data)
                 
                 userProfile.smallProfileImage = profileData.smallPicture
+                userProfile.mediumProfileImage = profileData.mediumPicture
+                userProfile.largeProfileImage = profileData.largePicture
                 
                 completion(.success(userProfile))
                 
             } catch _ {
-                print("CONSOLE func updateProfileDetails: ошибка 8")
+                print("CONSOLE func fetchUserProfileData: ошибка 8")
                 completion(.failure(FetchProfileData.JSONDecodeError))
                 return
             }
         }
-        
-        self.fetchProfileTask = fetchProfileTask
-        fetchProfileTask.resume()
+//        
+//        self.fetchProfileTask = fetchProfileTask
+//        fetchProfileTask.resume()
     }
     
     
-    private func makeUserProfileDataRequest(_ url: String) -> URLRequest? {
+    /// функция сбора запроса для получения данных профиля пользователя
+    private func makeUserProfileDataRequest(token: String, url: String) -> URLRequest? {
         
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
             print("CONSOLE func makeUserProfileRequest: Ошибка создания URL")
             return nil
         }
-        
+
         var request = URLRequest(url: url)
         
-        guard let authToken = oauth2TokenStorage.token else {
-            assertionFailure("Failed to create URL: Invalid Token")
-            print("CONSOLE func makeUserProfileRequest: неверный токен")
-            return nil
-        }
-        request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
-        
-        print(request.url as Any)
+        request.setValue("Bearer fvq_fBfeP7UsrgMQ3LXDBew7AOh99pVjLyMHUvMLvSk", forHTTPHeaderField: "Authorization")
+    
+        print("CONSOLE func makeUserProfileRequest: ", request.url as Any, token)
         request.httpMethod = "GET"
         return request
     }
-    
 }
