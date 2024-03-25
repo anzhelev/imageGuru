@@ -6,7 +6,7 @@
 //
 import Foundation
 
-// структура данных ответа сервера на запрос общей информации профиля
+/// структура данных ответа сервера на запрос общей информации профиля
 struct ProfileRequestResult: Decodable {
     var username: String
     var firstName: String
@@ -14,7 +14,7 @@ struct ProfileRequestResult: Decodable {
     var bio: String?
 }
 
-// структура данных ответа сервера на запрос фото профиля
+/// структура данных ответа сервера на запрос url фото профиля
 struct ProfileImageRequestResult: Decodable {
     enum RootKeys: String, CodingKey {
         case profileImage
@@ -36,7 +36,7 @@ struct ProfileImageRequestResult: Decodable {
     }
 }
 
-// структура данных для сохранения данных профиля пользователя
+/// структура данных для сохранения данных профиля пользователя
 struct Profile {
     var username: String
     var firstName: String
@@ -54,16 +54,17 @@ final class ProfileService {
     static let profileService = ProfileService()
     
     // MARK: - Private Properties
+    /// кейсы возможных ошибок при запросе данных профиля пользователя
     private enum FetchProfileData: Error {
         case invalidRequest
         case dataTaskError
-        case tokenRequestError
-        case dataError
+        case userDataRequestError
+        case receivedDataError
         case JSONDecodeError
     }
     
     private(set) var profile: Profile
-    var fetchProfileTask: URLSessionTask?
+    private var fetchProfileTask: URLSessionTask?
     
     
     // MARK: - Initializers
@@ -72,14 +73,15 @@ final class ProfileService {
     }
     
     // MARK: - Public Methods
-    func updateProfileDetails(userToken: String) {
+    /// функция обновления данных профиля пользователя
+    func updateProfileDetails(userToken: String, completion: @escaping () -> Void) {
         self.fetchUserProfileData(token: userToken) {result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let profile):
                     self.fetchProfileTask = nil
                     self.profile = profile
-                    self.fetchUserProfilePicture(username: profile.username, token: userToken) {result in
+                    self.fetchUserProfileImage(username: profile.username, token: userToken) {result in
                         DispatchQueue.main.async {
                             UIBlockingProgressHUD.dismiss()
                             switch result {
@@ -87,8 +89,8 @@ final class ProfileService {
                                 self.profile.smallProfileImage = profile.smallProfileImage
                                 self.profile.mediumProfileImage = profile.mediumProfileImage
                                 self.profile.largeProfileImage = profile.largeProfileImage
-                                print("CONSOLE ", self.profile)
                                 self.fetchProfileTask = nil
+                                completion()
                             case .failure(let error):
                                 print("CONSOLE func fetchUserProfilePicture: ", error.localizedDescription)
                             }
@@ -101,7 +103,6 @@ final class ProfileService {
         }
     }
     
-    
     // MARK: - Private Methods
     /// функция получения общих данных профиля пользователя
     private func fetchUserProfileData(token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
@@ -109,7 +110,7 @@ final class ProfileService {
         
         if (fetchProfileTask != nil) {
             fetchProfileTask?.cancel()
-            print("CONSOLE func fetchUserProfileData: Ошибка - повторный запрос")
+            print("CONSOLE func fetchUserProfileData: Отмена предыдущего незавершенного сетевого запроса.")
         }
         
         var userProfile = Profile(
@@ -132,13 +133,13 @@ final class ProfileService {
             
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
-                completion(.failure(FetchProfileData.tokenRequestError))
+                completion(.failure(FetchProfileData.userDataRequestError))
                 return
             }
             
             guard let data = data
             else {
-                completion(.failure(FetchProfileData.dataError))
+                completion(.failure(FetchProfileData.receivedDataError))
                 return
             }
             
@@ -160,18 +161,19 @@ final class ProfileService {
                 return
             }
         }
-        //        self.fetchProfileTask = fetchProfileTask
+        self.fetchProfileTask = fetchProfileTask
         fetchProfileTask.resume()
     }
     
-    /// функция получения фото профиля пользователя
-    private func fetchUserProfilePicture(username: String, token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
+    /// функция получения url на фото профиля пользователя
+    private func fetchUserProfileImage(username: String, token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-        //        if fetchProfileTask != nil {
-        //            fetchProfileTask?.cancel()
-        //        }
-        //
+        if fetchProfileTask != nil {
+            fetchProfileTask?.cancel()
+            print("CONSOLE func fetchUserProfileImage: Отмена предыдущего незавершенного сетевого запроса.")
+        }
+        
         var userProfile = Profile(
             username: username,
             firstName: "",
@@ -179,7 +181,6 @@ final class ProfileService {
         )
         
         let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
-        
         guard let request = makeUserProfileDataRequest(token: token, url: userProfileImageRequestUrl) else {
             completion(.failure(FetchProfileData.invalidRequest))
             return
@@ -194,13 +195,13 @@ final class ProfileService {
             
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
-                completion(.failure(FetchProfileData.tokenRequestError))
+                completion(.failure(FetchProfileData.userDataRequestError))
                 return
             }
             
             guard let data = data
             else {
-                completion(.failure(FetchProfileData.dataError))
+                completion(.failure(FetchProfileData.receivedDataError))
                 return
             }
             do {
@@ -219,26 +220,23 @@ final class ProfileService {
                 return
             }
         }
-        //
-        //        self.fetchProfileTask = fetchProfileTask
+        
+        self.fetchProfileTask = fetchProfileTask
         fetchProfileTask.resume()
     }
-    
     
     /// функция сбора запроса для получения данных профиля пользователя
     private func makeUserProfileDataRequest(token: String, url: String) -> URLRequest? {
         
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
-            print("CONSOLE func makeUserProfileRequest: Ошибка создания URL")
+            print("CONSOLE func makeUserProfileDataRequest: Ошибка создания URL")
             return nil
         }
         
         var request = URLRequest(url: url)
-        
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        print("CONSOLE func makeUserProfileRequest: ", request.url as Any, token)
         request.httpMethod = "GET"
         return request
     }

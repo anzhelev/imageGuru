@@ -21,10 +21,12 @@ final class SplashViewController: UIViewController {
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        tokenCheck()
+        
+        userDataCheck()
     }
     
     // MARK: - Public Methods
+    /// функция перехода на экран показа ленты фотографий
     func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
         let tabBarController = UIStoryboard(name: "Main", bundle: .main)
@@ -46,15 +48,18 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    func tokenCheck() {
+    /// функция проверки наличия сохраненного токена и данных профиля пользователя
+    func userDataCheck() {
         guard let token = oauth2TokenStorage.token else {
             performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
             return
         }
-        if userProfile.profile.username == "" {
-            userProfile.updateProfileDetails(userToken: token)
+        guard userProfile.profile.username != "" else {
+            UIBlockingProgressHUD.show()
+            userProfile.updateProfileDetails(userToken: token, completion: switchToTabBarController)
+            return
         }
-            switchToTabBarController()
+        switchToTabBarController()
     }
 }
 

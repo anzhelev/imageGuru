@@ -55,6 +55,7 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem?.tintColor = UIColor.igBlack
     }
     
+    /// функция запроса токена с передачей авторизационного кода
     private func fetchOAuthToken(_ code: String) {
         oAuth2Service.fetchOAuthToken(code) {result in
             DispatchQueue.main.async {
@@ -64,9 +65,7 @@ final class AuthViewController: UIViewController {
                     self.oAuth2Service.task = nil
                     self.oAuth2Service.lastCode = nil
                     self.oauth2TokenStorage.token = token
-                    self.splashViewController.tokenCheck()
-//                    self.splashViewController.switchToTabBarController()
-                    print("CONSOLE func fetchOAuthToken ", token)
+                    self.splashViewController.userDataCheck()
                 case .failure(let error):
                     print("CONSOLE func fetchOAuthToken ", error.localizedDescription)
                 }
