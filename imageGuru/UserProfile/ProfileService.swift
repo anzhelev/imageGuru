@@ -46,6 +46,7 @@ struct Profile {
     var smallProfileImage: URL?
     var mediumProfileImage: URL?
     var largeProfileImage: URL?
+    var profileImage: Data?
 }
 
 final class ProfileService {
@@ -61,6 +62,7 @@ final class ProfileService {
         case userDataRequestError
         case receivedDataError
         case JSONDecodeError
+        case profileImageLoadError
     }
     
     private(set) var profile: Profile
@@ -89,6 +91,7 @@ final class ProfileService {
                                 self.profile.smallProfileImage = profile.smallProfileImage
                                 self.profile.mediumProfileImage = profile.mediumProfileImage
                                 self.profile.largeProfileImage = profile.largeProfileImage
+                                self.profile.profileImage = profile.profileImage
                                 self.fetchProfileTask = nil
                                 completion()
                             case .failure(let error):
@@ -212,6 +215,23 @@ final class ProfileService {
                 userProfile.smallProfileImage = profileData.small
                 userProfile.mediumProfileImage = profileData.medium
                 userProfile.largeProfileImage = profileData.large
+                
+                // пробуем загрузить фото профиля по ссылке
+                guard let imageURL = profileData.large else {
+                    completion(.success(userProfile))
+//                    completion(.failure(FetchProfileData.profileImageLoadError))
+                    return
+                }
+                var imageData = Data()
+                
+                do {
+                    imageData = try Data(contentsOf: imageURL)
+                } catch {
+                    completion(.success(userProfile))
+//                    completion(.failure(FetchProfileData.profileImageLoadError))
+                    return
+                }
+                userProfile.profileImage = imageData
                 
                 completion(.success(userProfile))
                 
