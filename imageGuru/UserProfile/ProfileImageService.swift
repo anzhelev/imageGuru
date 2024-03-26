@@ -1,34 +1,34 @@
 //
-//  ProfileService.swift
+//  ProfileImageService.swift
 //  imageGuru
 //
-//  Created by Andrey Zhelev on 23.03.2024.
+//  Created by Andrey Zhelev on 26.03.2024.
 //
 import Foundation
 
-/// структура данных ответа сервера на запрос общей информации профиля
-struct ProfileRequestResult: Decodable {
-    var username: String
-    var firstName: String
-    var lastName: String?
-    var bio: String?
+/// структура данных ответа сервера на запрос url фото профиля
+struct ProfileImageURLRequestResult: Decodable {
+    enum RootKeys: String, CodingKey {
+        case profileImage
+    }
+    enum NestedKeys: String, CodingKey {
+        case small
+    }
+    
+    let small: URL?
+    
+    init(from decoder: Decoder) throws {
+        let root = try decoder.container(keyedBy: RootKeys.self)
+        let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
+        small = try nested.decode(URL.self, forKey: .small)
+    }
 }
 
-/// структура данных для сохранения данных профиля пользователя
-struct Profile {
-    var username: String
-    var firstName: String
-    var lastName: String?
-    var loginName: String
-    var bio: String?
-    var profileImageURL: URL?
-    var profileImage: Data?
-}
 
-final class ProfileService {
+final class ProfileImageService {
     
     // MARK: - Public Properties
-    static let profileService = ProfileService()
+    static let profileImageService = ProfileImageService()
     
     // MARK: - Private Properties
     /// кейсы возможных ошибок при запросе данных профиля пользователя
@@ -38,59 +38,56 @@ final class ProfileService {
         case userDataRequestError
         case receivedDataError
         case JSONDecodeError
-        case profileImageLoadError
+        case profileImageURLLoadError
     }
     
-    private(set) var profile: Profile
+    //    private(set) var profileImageURL: URL
+    private let userProfile = ProfileService.profileService
+    private (set) var avatarURL: URL?
     private var fetchProfileTask: URLSessionTask?
     
     
     // MARK: - Initializers
     private init() {
-        self.profile = Profile(username: "", firstName: "", loginName: "")
     }
     
     // MARK: - Public Methods
     /// функция обновления данных профиля пользователя
     func updateProfileDetails(userToken: String, completion: @escaping () -> Void) {
-        self.fetchUserProfileData(token: userToken) {result in
+        self.fetchUserProfileImageURL(username: userProfile.profile.username, token: userToken) {result in
             DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
                 switch result {
-                case .success(let profile):
+                case .success(let url):
+                    self.avatarURL = url
                     self.fetchProfileTask = nil
-                    self.profile = profile
                     completion()
                 case .failure(let error):
-                    print("CONSOLE func fetchUserProfileData: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfilePicture: ", error.localizedDescription)
                 }
             }
         }
     }
     
     // MARK: - Private Methods
-    /// функция получения общих данных профиля пользователя
-    private func fetchUserProfileData(token: String, completion: @escaping (Result<Profile, Error>) -> Void) {
+    
+    /// функция получения url на фото профиля пользователя
+    private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-        if (fetchProfileTask != nil) {
+        if fetchProfileTask != nil {
             fetchProfileTask?.cancel()
-            print("CONSOLE func fetchUserProfileData: Отмена предыдущего незавершенного сетевого запроса.")
+            print("CONSOLE func fetchUserProfileImageURL: Отмена предыдущего незавершенного сетевого запроса.")
         }
         
-        var userProfile = Profile(
-            username: "",
-            firstName: "",
-            loginName: ""
-        )
-        
-        let userProfileRequestUrl = "https://api.unsplash.com/me"
-        guard let request = makeUserProfileDataRequest(token: token, url: userProfileRequestUrl) else {
+        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
+        guard let request = makeUserProfileDataRequest(token: token, url: userProfileImageRequestUrl) else {
             completion(.failure(FetchProfileData.invalidRequest))
             return
         }
         
         let fetchProfileTask = URLSession.shared.dataTask(with: request) {data, response, error in
+            
             if error != nil {
                 completion(.failure(FetchProfileData.dataTaskError))
                 return
@@ -107,25 +104,24 @@ final class ProfileService {
                 completion(.failure(FetchProfileData.receivedDataError))
                 return
             }
-            
             do {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let profileData = try decoder.decode(ProfileRequestResult.self, from: data)
+                let profileData = try decoder.decode(ProfileImageURLRequestResult.self, from: data)
                 
-                userProfile.username = profileData.username
-                userProfile.firstName = profileData.firstName
-                userProfile.lastName = profileData.lastName
-                userProfile.loginName = "@\(profileData.username)"
-                userProfile.bio = profileData.bio
+                guard let profileImageURL = profileData.small else {
+                    completion(.failure(FetchProfileData.profileImageURLLoadError))
+                    return
+                }
                 
-                completion(.success(userProfile))
+                completion(.success(profileImageURL))
                 
             } catch _ {
                 completion(.failure(FetchProfileData.JSONDecodeError))
                 return
             }
         }
+        
         self.fetchProfileTask = fetchProfileTask
         fetchProfileTask.resume()
     }

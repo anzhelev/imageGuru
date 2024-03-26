@@ -21,7 +21,8 @@ final class ProfileViewController: UIViewController {
         
         view.backgroundColor = .igBackground
        
-        let profileImage = userProfile.profile.profileImage != nil ? UIImage(data: userProfile.profile.profileImage!) : UIImage(named: "user_profile_picture")
+//        let profileImage = userProfile.profile.profileImage != nil ? UIImage(data: userProfile.profile.profileImage!) : UIImage(named: "user_profile_picture")
+        let profileImage = UIImage(named: "user_profile_picture")
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
