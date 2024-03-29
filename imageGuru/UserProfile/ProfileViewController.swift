@@ -14,15 +14,34 @@ final class ProfileViewController: UIViewController {
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     private let userProfile = ProfileService.profileService
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .igBackground
-       
-//        let profileImage = userProfile.profile.profileImage != nil ? UIImage(data: userProfile.profile.profileImage!) : UIImage(named: "user_profile_picture")
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        
+        updateAvatar()
+        
         let profileImage = UIImage(named: "user_profile_picture")
+        //        let profileImage = ProfileImageService.profileImageService.avatarImageData != nil ? UIImage(data: ProfileImageService.profileImageService.avatarImageData!) : UIImage(named: "user_profile_picture")
+        //
+        //        if let profileImage {
+        //            print("CONSOLE func updateAvatar: ", profileImage as Any)
+        //            self.profileImageView = UIImageView(image: profileImage)
+        //        }
+        //        print("CONSOLE func updateAvatar: ", profileImage as Any)
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
@@ -79,6 +98,15 @@ final class ProfileViewController: UIViewController {
             labelDisableButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
             labelDisableButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -14)
         ])
+    }
+    
+    private func updateAvatar() {
+        //        let profileImage = ProfileImageService.profileImageService.avatarImageData != nil ? UIImage(data: ProfileImageService.profileImageService.avatarImageData!) : UIImage(named: "user_profile_picture")
+        //
+        //        if let profileImage {
+        //            print("CONSOLE func updateAvatar: ", profileImage as Any)
+        //            self.profileImageView = UIImageView(image: profileImage)
+        //        }
     }
     
     // MARK: - IBAction

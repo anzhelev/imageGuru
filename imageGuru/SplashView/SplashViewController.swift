@@ -17,6 +17,7 @@ final class SplashViewController: UIViewController {
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let userProfile = ProfileService.profileService
+    private let userPofileImage = ProfileImageService.profileImageService
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
@@ -56,8 +57,11 @@ final class SplashViewController: UIViewController {
         }
         guard userProfile.profile.username != "" else {
             UIBlockingProgressHUD.show()
-            userProfile.updateProfileDetails(userToken: token, completion: switchToTabBarController)
+            userProfile.updateProfileDetails(userToken: token, completion: userDataCheck)
             return
+        }
+        userPofileImage.updateProfileImageURL(userToken: token) {
+//            print("CONSOLE func updateProfileImageURL ", self.userPofileImage.avatarURL as Any)
         }
         switchToTabBarController()
     }

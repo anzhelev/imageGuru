@@ -12,23 +12,23 @@ struct ProfileImageURLRequestResult: Decodable {
         case profileImage
     }
     enum NestedKeys: String, CodingKey {
-        case small
+        case medium
     }
     
-    let small: URL?
+    let medium: URL?
     
     init(from decoder: Decoder) throws {
         let root = try decoder.container(keyedBy: RootKeys.self)
         let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
-        small = try nested.decode(URL.self, forKey: .small)
+        medium = try nested.decode(URL.self, forKey: .medium)
     }
 }
-
 
 final class ProfileImageService {
     
     // MARK: - Public Properties
     static let profileImageService = ProfileImageService()
+    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
     
     // MARK: - Private Properties
     /// кейсы возможных ошибок при запросе данных профиля пользователя
@@ -41,9 +41,9 @@ final class ProfileImageService {
         case profileImageURLLoadError
     }
     
-    //    private(set) var profileImageURL: URL
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL?
+//    private (set) var avatarImageData: Data?
     private var fetchProfileTask: URLSessionTask?
     
     
@@ -53,15 +53,19 @@ final class ProfileImageService {
     
     // MARK: - Public Methods
     /// функция обновления данных профиля пользователя
-    func updateProfileDetails(userToken: String, completion: @escaping () -> Void) {
+    func updateProfileImageURL(userToken: String, completion: @escaping () -> Void) {
         self.fetchUserProfileImageURL(username: userProfile.profile.username, token: userToken) {result in
             DispatchQueue.main.async {
-                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case .success(let url):
                     self.avatarURL = url
                     self.fetchProfileTask = nil
                     completion()
+                    NotificationCenter.default
+                        .post(
+                            name: ProfileImageService.didChangeNotification,
+                            object: self,
+                            userInfo: ["URL": url])
                 case .failure(let error):
                     print("CONSOLE func fetchUserProfilePicture: ", error.localizedDescription)
                 }
@@ -95,6 +99,7 @@ final class ProfileImageService {
             
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
+                print("CONSOLE func fetchUserProfileImageURL: ", response)
                 completion(.failure(FetchProfileData.userDataRequestError))
                 return
             }
@@ -109,10 +114,18 @@ final class ProfileImageService {
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let profileData = try decoder.decode(ProfileImageURLRequestResult.self, from: data)
                 
-                guard let profileImageURL = profileData.small else {
+                guard let profileImageURL = profileData.medium else {
                     completion(.failure(FetchProfileData.profileImageURLLoadError))
                     return
                 }
+//                // получаем данные картинки по ссылке
+//                var imageData = Data()
+//                do {
+//                    imageData = try Data(contentsOf: profileImageURL)
+//                } catch {
+//                    return
+//                }
+//                self.avatarImageData = imageData
                 
                 completion(.success(profileImageURL))
                 
