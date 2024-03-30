@@ -14,34 +14,21 @@ final class ProfileViewController: UIViewController {
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     private let userProfile = ProfileService.profileService
+    private let userProfileAvatar = ProfileImageService.profileImageService.avatarURL2
     private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        configureUIElements()
+        userImageUpdateMonitor()
+    }
+    
+    /// настраиваем внешний вид экрана и графические элементы
+    private func configureUIElements() {
         view.backgroundColor = .igBackground
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
-        updateAvatar()
-        
         let profileImage = UIImage(named: "user_profile_picture")
-        //        let profileImage = ProfileImageService.profileImageService.avatarImageData != nil ? UIImage(data: ProfileImageService.profileImageService.avatarImageData!) : UIImage(named: "user_profile_picture")
-        //
-        //        if let profileImage {
-        //            print("CONSOLE func updateAvatar: ", profileImage as Any)
-        //            self.profileImageView = UIImageView(image: profileImage)
-        //        }
-        //        print("CONSOLE func updateAvatar: ", profileImage as Any)
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
@@ -100,13 +87,22 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
-    private func updateAvatar() {
-        //        let profileImage = ProfileImageService.profileImageService.avatarImageData != nil ? UIImage(data: ProfileImageService.profileImageService.avatarImageData!) : UIImage(named: "user_profile_picture")
-        //
-        //        if let profileImage {
-        //            print("CONSOLE func updateAvatar: ", profileImage as Any)
-        //            self.profileImageView = UIImageView(image: profileImage)
-        //        }
+    private func setUserImage() {
+        print("CONSOLE func updateAvatar: Запущена функция обновления аватара. URL: ", userProfileAvatar)
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    /// отслеживаем загрузку  аватара и обновляем картинку
+    private func userImageUpdateMonitor() {
+        //        setUserImage()
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: ProfileImageService.avatarUrlNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            setUserImage()
+        }
     }
     
     // MARK: - IBAction
@@ -116,5 +112,6 @@ final class ProfileViewController: UIViewController {
         userNameLabel.text = "User Name"
         userLoginLabel.text = "@user_login"
         userDescriptionLabel.text = "Description"
+        NotificationCenter.default.post(name: Notification.Name("avatarURLReceived"), object: self)
     }
 }

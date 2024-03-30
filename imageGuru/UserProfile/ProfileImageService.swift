@@ -6,49 +6,44 @@
 //
 import Foundation
 
-/// структура данных ответа сервера на запрос url фото профиля
-struct ProfileImageURLRequestResult: Decodable {
-    enum RootKeys: String, CodingKey {
-        case profileImage
-    }
-    enum NestedKeys: String, CodingKey {
-        case medium
-    }
-    
-    let medium: URL?
-    
-    init(from decoder: Decoder) throws {
-        let root = try decoder.container(keyedBy: RootKeys.self)
-        let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
-        medium = try nested.decode(URL.self, forKey: .medium)
-    }
-}
-
 final class ProfileImageService {
     
     // MARK: - Public Properties
     static let profileImageService = ProfileImageService()
-    static let didChangeNotification = Notification.Name(rawValue: "ProfileImageProviderDidChange")
+    static let avatarUrlNotification = Notification.Name(rawValue: "avatarURLReceived")
     
     // MARK: - Private Properties
+    /// структура данных ответа сервера на запрос url фото профиля
+    private struct ProfileImageURLRequestResult: Decodable {
+        enum RootKeys: String, CodingKey {
+            case profileImage
+        }
+        enum NestedKeys: String, CodingKey {
+            case large
+        }
+        let large: URL?
+        init(from decoder: Decoder) throws {
+            let root = try decoder.container(keyedBy: RootKeys.self)
+            let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
+            large = try nested.decode(URL.self, forKey: .large)
+        }
+    }
+    
     /// кейсы возможных ошибок при запросе данных профиля пользователя
-    private enum FetchProfileData: Error {
-        case invalidRequest
-        case dataTaskError
-        case userDataRequestError
-        case receivedDataError
-        case JSONDecodeError
-        case profileImageURLLoadError
+    private enum FetchProfileImageUrlErrors: Error {
+        case requestCreationError
     }
     
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL?
-//    private (set) var avatarImageData: Data?
-    private var fetchProfileTask: URLSessionTask?
-    
+    private (set) var avatarURL2: String
+    private let dataLoader = DataLoader()
+    private var task: URLSessionTask?
     
     // MARK: - Initializers
     private init() {
+        avatarURL = nil
+        avatarURL2 = "-"
     }
     
     // MARK: - Public Methods
@@ -57,17 +52,18 @@ final class ProfileImageService {
         self.fetchUserProfileImageURL(username: userProfile.profile.username, token: userToken) {result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let url):
-                    self.avatarURL = url
-                    self.fetchProfileTask = nil
+                case .success(let avatar):
+                    self.avatarURL = avatar.large
+                    self.avatarURL2 = self.avatarURL?.absoluteString ?? "URL"
+                    print("CONSOLE func updateProfileImageURL: ", self.avatarURL2)
                     completion()
-                    NotificationCenter.default
-                        .post(
-                            name: ProfileImageService.didChangeNotification,
-                            object: self,
-                            userInfo: ["URL": url])
+                    
+                    NotificationCenter.default.post(name: ProfileImageService.avatarUrlNotification,
+                                                    object: ProfileImageService.profileImageService,
+                                                    userInfo: ["URL": self.avatarURL2]
+                    )
                 case .failure(let error):
-                    print("CONSOLE func fetchUserProfilePicture: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfileImageURL: ", error.localizedDescription)
                 }
             }
         }
@@ -76,81 +72,42 @@ final class ProfileImageService {
     // MARK: - Private Methods
     
     /// функция получения url на фото профиля пользователя
-    private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
+    private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<ProfileImageURLRequestResult, Error>) -> Void) {
         assert(Thread.isMainThread)
-        
-        if fetchProfileTask != nil {
-            fetchProfileTask?.cancel()
-            print("CONSOLE func fetchUserProfileImageURL: Отмена предыдущего незавершенного сетевого запроса.")
-        }
-        
-        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
-        guard let request = makeUserProfileDataRequest(token: token, url: userProfileImageRequestUrl) else {
-            completion(.failure(FetchProfileData.invalidRequest))
+        if task != nil {
+            print("CONSOLE func fetchUserProfileImageURL: Отмена повторного сетевого запроса URL аватара для : \(username).")
             return
         }
         
-        let fetchProfileTask = URLSession.shared.dataTask(with: request) {data, response, error in
-            
-            if error != nil {
-                completion(.failure(FetchProfileData.dataTaskError))
-                return
-            }
-            
-            if let response = response as? HTTPURLResponse,
-               response.statusCode < 200 || response.statusCode >= 300 {
-                print("CONSOLE func fetchUserProfileImageURL: ", response)
-                completion(.failure(FetchProfileData.userDataRequestError))
-                return
-            }
-            
-            guard let data = data
-            else {
-                completion(.failure(FetchProfileData.receivedDataError))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let profileData = try decoder.decode(ProfileImageURLRequestResult.self, from: data)
-                
-                guard let profileImageURL = profileData.medium else {
-                    completion(.failure(FetchProfileData.profileImageURLLoadError))
-                    return
-                }
-//                // получаем данные картинки по ссылке
-//                var imageData = Data()
-//                do {
-//                    imageData = try Data(contentsOf: profileImageURL)
-//                } catch {
-//                    return
-//                }
-//                self.avatarImageData = imageData
-                
-                completion(.success(profileImageURL))
-                
-            } catch _ {
-                completion(.failure(FetchProfileData.JSONDecodeError))
-                return
+        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
+        guard let request = makeUserProfileImageUrlRequest(token: token, url: userProfileImageRequestUrl) else {
+            completion(.failure(FetchProfileImageUrlErrors.requestCreationError))
+            return
+        }
+        
+        let task = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
+            switch result {
+            case .success(let userImageURL):
+                completion(.success(userImageURL))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
         
-        self.fetchProfileTask = fetchProfileTask
-        fetchProfileTask.resume()
+        self.task = task
+        task.resume()
     }
     
-    /// функция сбора запроса для получения данных профиля пользователя
-    private func makeUserProfileDataRequest(token: String, url: String) -> URLRequest? {
+    /// функция сбора запроса для получения картинки профиля пользователя
+    private func makeUserProfileImageUrlRequest(token: String, url: String) -> URLRequest? {
         
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
-            print("CONSOLE func makeUserProfileDataRequest: Ошибка создания URL")
+            print("CONSOLE func makeUserProfileImageUrlRequest: Ошибка сборки URL для запроса картинки профиля пользователя")
             return nil
         }
-        
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
         request.httpMethod = "GET"
         return request
     }

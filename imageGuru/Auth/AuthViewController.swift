@@ -67,7 +67,7 @@ final class AuthViewController: UIViewController {
                     self.oauth2TokenStorage.token = token
                     self.splashViewController.userDataCheck()
                 case .failure(let error):
-                    print("CONSOLE func fetchOAuthToken ", error.localizedDescription)
+                    print("CONSOLE func fetchOAuthToken: ", error.localizedDescription)
                 }
             }
         }

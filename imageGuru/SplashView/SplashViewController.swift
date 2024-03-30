@@ -27,6 +27,23 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Public Methods
+    /// функция проверки наличия сохраненного токена и данных профиля пользователя
+    func userDataCheck() {
+        guard let token = oauth2TokenStorage.token else {
+            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            return
+        }
+        if userProfile.profile.username == "" {
+            UIBlockingProgressHUD.show()
+            userProfile.updateProfileDetails(userToken: token) {[self] in
+                if userPofileImage.avatarURL == nil {
+                    userPofileImage.updateProfileImageURL(userToken: token) { }
+                }
+                switchToTabBarController()
+            }
+        }
+    }
+    
     /// функция перехода на экран показа ленты фотографий
     func switchToTabBarController() {
         guard let window = UIApplication.shared.windows.first else { fatalError("Invalid Configuration") }
@@ -46,24 +63,6 @@ final class SplashViewController: UIViewController {
         } else {
             super.prepare(for: segue, sender: sender)
         }
-    }
-    
-    // MARK: - Private Methods
-    /// функция проверки наличия сохраненного токена и данных профиля пользователя
-    func userDataCheck() {
-        guard let token = oauth2TokenStorage.token else {
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
-            return
-        }
-        guard userProfile.profile.username != "" else {
-            UIBlockingProgressHUD.show()
-            userProfile.updateProfileDetails(userToken: token, completion: userDataCheck)
-            return
-        }
-        userPofileImage.updateProfileImageURL(userToken: token) {
-//            print("CONSOLE func updateProfileImageURL ", self.userPofileImage.avatarURL as Any)
-        }
-        switchToTabBarController()
     }
 }
 

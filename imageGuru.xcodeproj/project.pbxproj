@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		D4040BF02BAECEAC00E965F0 /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */; };
+		D408B7052BB6D002004C42C2 /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D408B7042BB6D002004C42C2 /* DataLoader.swift */; };
 		D4176E632B6F9FAE0011F179 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E622B6F9FAE0011F179 /* AppDelegate.swift */; };
 		D4176E652B6F9FAE0011F179 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E642B6F9FAE0011F179 /* SceneDelegate.swift */; };
 		D4176E672B6F9FAE0011F179 /* ImagesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4176E662B6F9FAE0011F179 /* ImagesListViewController.swift */; };
@@ -33,6 +34,7 @@
 
 /* Begin PBXFileReference section */
 		D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		D408B7042BB6D002004C42C2 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		D4176E5F2B6F9FAE0011F179 /* imageGuru.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imageGuru.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4176E622B6F9FAE0011F179 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D4176E642B6F9FAE0011F179 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -69,6 +71,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D408B7032BB6CF87004C42C2 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				D408B7042BB6D002004C42C2 /* DataLoader.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		D4176E562B6F9FAE0011F179 = {
 			isa = PBXGroup;
 			children = (
@@ -95,6 +105,7 @@
 				D42E190A2B753D540042ED08 /* Resources */,
 				D4D28C952BA5D385003458D9 /* SplashView */,
 				D44DEF412B99D10D00A703F2 /* Auth */,
+				D408B7032BB6CF87004C42C2 /* Network */,
 				D45BF4C82B8BAB2300601F9C /* UserProfile */,
 				D44B835B2B7B6651002A5662 /* ImagesList */,
 				D4176E682B6F9FAE0011F179 /* Main.storyboard */,
@@ -256,6 +267,7 @@
 				D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */,
 				D49D699D2BB297BD00A3BFA7 /* ProfileImageService.swift in Sources */,
 				D4F90A122BA060610042AA47 /* OAuth2Service.swift in Sources */,
+				D408B7052BB6D002004C42C2 /* DataLoader.swift in Sources */,
 				D4D28C942BA5AF1E003458D9 /* SplashViewController.swift in Sources */,
 				D4F1B3482B8B4E4000932BD1 /* SingleImageViewController.swift in Sources */,
 				D4C892A72BAD95C000197B76 /* UIBlockingProgressHUD.swift in Sources */,
