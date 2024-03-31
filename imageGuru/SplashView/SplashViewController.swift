@@ -16,14 +16,21 @@ final class SplashViewController: UIViewController {
     // MARK: - Private Properties
     private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
+    private let oAuth2Service = OAuth2Service.shared
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
+    private let alertPresenter = AlertPresenter()
     
     // MARK: - Lifecycle
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        userDataCheck()
+        if oAuth2Service.authorizationFailed {
+            showAlert(message: "Не удалось войти в систему")
+            oAuth2Service.authorizationFailed.toggle()
+        } else {
+            userDataCheck()
+        }
     }
     
     // MARK: - Public Methods
@@ -35,12 +42,19 @@ final class SplashViewController: UIViewController {
         }
         if userProfile.profile.username == "" {
             UIBlockingProgressHUD.show()
-            userProfile.updateProfileDetails(userToken: token) {[self] in
-                if userPofileImage.avatarURL == nil {
-                    userPofileImage.updateProfileImageURL(userToken: token) { }
+            userProfile.updateProfileDetails(userToken: token) {[self] result in
+                switch result {
+                case true:
+                    if userPofileImage.avatarURL == nil {
+                        userPofileImage.updateProfileImageURL(userToken: token) { }
+                    }
+                    switchToTabBarController()
+                case false:
+                    showAlert(message: "Не удалось получить данные профиля")
                 }
-                switchToTabBarController()
             }
+        } else {
+            switchToTabBarController()
         }
     }
     
@@ -53,6 +67,7 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Overrided Methods
+    /// подготовка перехода на экран авторизации
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showAuthenticationScreenSegueIdentifier {
             guard
@@ -64,6 +79,17 @@ final class SplashViewController: UIViewController {
             super.prepare(for: segue, sender: sender)
         }
     }
+    
+    // MARK: - Private Methods
+    /// фукнкция отображения алерта об ошибке при авторизации или загрузке профиля
+    private func showAlert(message: String) {
+        let alert = AlertModel(title: "Что-то пошло не так(",
+                               text: message,
+                               buttonText: "Ok") {[self] UIAlertAction in
+            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+        }
+        self.alertPresenter.showAlert(alert: alert, on: self)
+    }    
 }
 
 // MARK: - AuthViewControllerDelegate

@@ -87,12 +87,13 @@ final class ProfileViewController: UIViewController {
         ])
     }
     
+    /// устанавливаем аватар
     private func setUserImage() {
         print("CONSOLE func updateAvatar: Запущена функция обновления аватара. URL: ", userProfileAvatar)
         NotificationCenter.default.removeObserver(self)
     }
     
-    /// отслеживаем загрузку  аватара и обновляем картинку
+    /// отслеживаем загрузку  аватара и запускаем его установку
     private func userImageUpdateMonitor() {
         //        setUserImage()
         profileImageServiceObserver = NotificationCenter.default.addObserver(

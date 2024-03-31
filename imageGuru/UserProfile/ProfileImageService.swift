@@ -55,7 +55,7 @@ final class ProfileImageService {
                 case .success(let avatar):
                     self.avatarURL = avatar.large
                     self.avatarURL2 = self.avatarURL?.absoluteString ?? "URL"
-                    print("CONSOLE func updateProfileImageURL: ", self.avatarURL2)
+                    print("CONSOLE func updateProfileImageURL:", self.avatarURL2)
                     completion()
                     
                     NotificationCenter.default.post(name: ProfileImageService.avatarUrlNotification,
@@ -63,7 +63,7 @@ final class ProfileImageService {
                                                     userInfo: ["URL": self.avatarURL2]
                     )
                 case .failure(let error):
-                    print("CONSOLE func fetchUserProfileImageURL: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfileImageURL:", error.localizedDescription)
                 }
             }
         }

@@ -27,11 +27,9 @@ final class AuthViewController: UIViewController {
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let splashViewController = SplashViewController()
     
-    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureBackButton()
     }
     
@@ -59,7 +57,6 @@ final class AuthViewController: UIViewController {
     private func fetchOAuthToken(_ code: String) {
         oAuth2Service.fetchOAuthToken(code) {result in
             DispatchQueue.main.async {
-                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case .success(let token):
                     self.oAuth2Service.task = nil
@@ -67,7 +64,8 @@ final class AuthViewController: UIViewController {
                     self.oauth2TokenStorage.token = token
                     self.splashViewController.userDataCheck()
                 case .failure(let error):
-                    print("CONSOLE func fetchOAuthToken: ", error.localizedDescription)
+                    print("CONSOLE func fetchOAuthToken:", error.self)
+                    self.oAuth2Service.authorizationFailed = true
                 }
             }
         }
@@ -78,7 +76,6 @@ final class AuthViewController: UIViewController {
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
         delegate?.authViewController(self)
-        UIBlockingProgressHUD.show()
         fetchOAuthToken(code)
     }
 }

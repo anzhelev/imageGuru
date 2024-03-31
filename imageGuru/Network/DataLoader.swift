@@ -4,7 +4,6 @@
 //
 //  Created by Andrey Zhelev on 29.03.2024.
 //
-
 import Foundation
 
 final class DataLoader {
@@ -12,10 +11,10 @@ final class DataLoader {
     // MARK: - Private Properties
     /// кейсы возможных ошибок при запросе данных с сервера
     private enum DataLoaderErrors: Error {
-        case requestFail
-        case wrongServerResponce
+        case requestFail(Error)
+        case wrongServerResponce(String)
         case wrondData
-        case JSONDecodeError
+        case JSONDecodeError(Error)
     }
     
     // MARK: - Public Methods
@@ -26,15 +25,14 @@ final class DataLoader {
         
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             
-            if error != nil {
-//                print("CONSOLE func objectTask: ", error?.localizedDescription as Any)
-                completion(.failure(DataLoaderErrors.requestFail))
+            if let error = error {
+                completion(.failure(DataLoaderErrors.requestFail(error)))
                 return
             }
             
             if let response = response as? HTTPURLResponse,
                response.statusCode < 200 || response.statusCode >= 300 {
-                completion(.failure(DataLoaderErrors.wrongServerResponce))
+                completion(.failure(DataLoaderErrors.wrongServerResponce("Код ответа сервера: \(response.statusCode)")))
                 return
             }
             
@@ -47,8 +45,8 @@ final class DataLoader {
             do {
                 let decodedData = try decoder.decode(T.self, from: data)
                 completion(.success(decodedData))
-            } catch _ {
-                completion(.failure(DataLoaderErrors.JSONDecodeError))
+            } catch {
+                completion(.failure(DataLoaderErrors.JSONDecodeError(error)))
                 return
             }
         }

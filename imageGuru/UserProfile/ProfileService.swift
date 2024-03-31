@@ -38,7 +38,6 @@ final class ProfileService {
     private let dataLoader = DataLoader()
     private var task: URLSessionTask?
     
-    
     // MARK: - Initializers
     private init() {
         self.profile = Profile(username: "", firstName: "", loginName: "")
@@ -46,7 +45,7 @@ final class ProfileService {
     
     // MARK: - Public Methods
     /// функция обновления данных профиля пользователя
-    func updateProfileDetails(userToken: String, completion: @escaping () -> Void) {
+    func updateProfileDetails(userToken: String, completion: @escaping (Bool) -> Void) {
         self.fetchUserProfileData(token: userToken) {result in
             DispatchQueue.main.async {
                 UIBlockingProgressHUD.dismiss()
@@ -58,9 +57,10 @@ final class ProfileService {
                     self.profile.loginName = "@\(profile.username)"
                     self.profile.bio = profile.bio
                     self.task = nil
-                    completion()
+                    completion(true)
                 case .failure(let error):
-                    print("CONSOLE func fetchUserProfileData: ", error.localizedDescription)
+                    print("CONSOLE func fetchUserProfileData:", error.localizedDescription)
+                    completion(false)
                 }
             }
         }
@@ -75,7 +75,7 @@ final class ProfileService {
             task?.cancel()
             print("CONSOLE func fetchUserProfileData: Отмена незавершенного сетевого запроса данных профиля.")
         }
-
+        
         let userProfileRequestUrl = "https://api.unsplash.com/me"
         guard let request = makeUserProfileDataRequest(token: token, url: userProfileRequestUrl) else {
             completion(.failure(FetchProfileDataErrors.requestCreationError))
@@ -102,7 +102,7 @@ final class ProfileService {
             assertionFailure("Failed to create URL")
             print("CONSOLE func makeUserProfileDataRequest: Ошибка сборки URL для запроса данных профиля пользователя")
             return nil
-        }        
+        }
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
