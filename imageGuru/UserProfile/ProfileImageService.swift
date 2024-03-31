@@ -4,13 +4,12 @@
 //
 //  Created by Andrey Zhelev on 26.03.2024.
 //
-import Foundation
+import UIKit
 
 final class ProfileImageService {
     
     // MARK: - Public Properties
     static let profileImageService = ProfileImageService()
-    static let avatarUrlNotification = Notification.Name(rawValue: "avatarURLReceived")
     
     // MARK: - Private Properties
     /// структура данных ответа сервера на запрос url фото профиля
@@ -36,14 +35,18 @@ final class ProfileImageService {
     
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL?
-    private (set) var avatarURL2: String
+    private (set) var avatarURL2: String = "" {
+        didSet {            
+            NotificationCenter.default.post(name: .userImageUrlUpdated, object: self.avatarURL2)
+            print("CONSOLE avatarURL2.didSet: ", avatarURL2)
+        }
+    }
     private let dataLoader = DataLoader()
     private var task: URLSessionTask?
     
     // MARK: - Initializers
     private init() {
         avatarURL = nil
-        avatarURL2 = "-"
     }
     
     // MARK: - Public Methods
@@ -55,13 +58,7 @@ final class ProfileImageService {
                 case .success(let avatar):
                     self.avatarURL = avatar.large
                     self.avatarURL2 = self.avatarURL?.absoluteString ?? "URL"
-                    print("CONSOLE func updateProfileImageURL:", self.avatarURL2)
                     completion()
-                    
-                    NotificationCenter.default.post(name: ProfileImageService.avatarUrlNotification,
-                                                    object: ProfileImageService.profileImageService,
-                                                    userInfo: ["URL": self.avatarURL2]
-                    )
                 case .failure(let error):
                     print("CONSOLE func fetchUserProfileImageURL:", error.localizedDescription)
                 }

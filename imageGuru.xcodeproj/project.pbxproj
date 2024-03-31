@@ -16,6 +16,7 @@
 		D4176E6C2B6F9FAF0011F179 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4176E6B2B6F9FAF0011F179 /* Assets.xcassets */; };
 		D4176E6F2B6F9FAF0011F179 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D4176E6D2B6F9FAF0011F179 /* LaunchScreen.storyboard */; };
 		D42B256F2B714B2000C923FF /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B256E2B714B2000C923FF /* UIColor+Extension.swift */; };
+		D433B0EC2BB9CFCB000A6C8F /* NotificationName+Extention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */; };
 		D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B83592B7B6349002A5662 /* ImagesListCell.swift */; };
 		D44DEF402B99D0B800A703F2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */; };
 		D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF422B99D34900A703F2 /* WebViewViewController.swift */; };
@@ -45,6 +46,7 @@
 		D4176E6E2B6F9FAF0011F179 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D4176E702B6F9FAF0011F179 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D42B256E2B714B2000C923FF /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extention.swift"; sourceTree = "<group>"; };
 		D44B83592B7B6349002A5662 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		D44DEF422B99D34900A703F2 /* WebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 				D42B256E2B714B2000C923FF /* UIColor+Extension.swift */,
 				D49C8D392B9360B600CB0DC5 /* Constants.swift */,
 				D49245A42BA6233400D4FCD8 /* CustomNavigationController.swift */,
+				D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -262,6 +265,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D433B0EC2BB9CFCB000A6C8F /* NotificationName+Extention.swift in Sources */,
 				D4F90A162BA22BE40042AA47 /* OAuth2TokenStorage.swift in Sources */,
 				D4040BF02BAECEAC00E965F0 /* ProfileService.swift in Sources */,
 				D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */,

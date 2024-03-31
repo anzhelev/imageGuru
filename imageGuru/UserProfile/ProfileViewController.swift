@@ -4,6 +4,7 @@
 //
 //  Created by Andrey Zhelev on 23.02.2024.
 //
+import Foundation
 import UIKit
 
 final class ProfileViewController: UIViewController {
@@ -14,13 +15,12 @@ final class ProfileViewController: UIViewController {
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
     private let userProfile = ProfileService.profileService
-    private let userProfileAvatar = ProfileImageService.profileImageService.avatarURL2
+    private let userPofileImageService = ProfileImageService.profileImageService
     private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         configureUIElements()
         userImageUpdateMonitor()
     }
@@ -88,21 +88,18 @@ final class ProfileViewController: UIViewController {
     }
     
     /// устанавливаем аватар
-    private func setUserImage() {
-        print("CONSOLE func updateAvatar: Запущена функция обновления аватара. URL: ", userProfileAvatar)
-        NotificationCenter.default.removeObserver(self)
+    private func setUserImage(notification: Notification) {
+        print("CONSOLE func updateAvatar: Запущена функция обновления аватара. URL: ", notification.object as Any)
     }
     
     /// отслеживаем загрузку  аватара и запускаем его установку
     private func userImageUpdateMonitor() {
-        //        setUserImage()
         profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: ProfileImageService.avatarUrlNotification,
+            forName: .userImageUrlUpdated,
             object: nil,
             queue: .main
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            setUserImage()
+        ) {notification in
+            self.setUserImage(notification: notification)
         }
     }
     
@@ -113,6 +110,6 @@ final class ProfileViewController: UIViewController {
         userNameLabel.text = "User Name"
         userLoginLabel.text = "@user_login"
         userDescriptionLabel.text = "Description"
-        NotificationCenter.default.post(name: Notification.Name("avatarURLReceived"), object: self)
+        NotificationCenter.default.post(name: .userImageUrlUpdated, object: self.userPofileImageService.avatarURL2)
     }
 }
