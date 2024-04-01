@@ -37,10 +37,10 @@ final class ProfileImageService {
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL? {
         didSet {
+            NotificationCenter.default.post(name: .userImageUrlUpdated, object: avatarURL)
             print("CONSOLE avatarURL:", avatarURL?.absoluteString ?? "")
         }
     }
-//    private (set) var avatarURL2: String = ""
     private let dataLoader = DataLoader()
     private var task: URLSessionTask?
     
@@ -91,7 +91,7 @@ final class ProfileImageService {
                 completion(.success(userImageURL))
                 NotificationCenter.default.post(name: .userImageUrlUpdated,
                                                 object: self,
-                                                userInfo: ["URL?": userImageURL])
+                                                userInfo: ["URL?": userImageURL])                
             case .failure(let error):
                 completion(.failure(error))
             }

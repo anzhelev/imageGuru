@@ -6,6 +6,7 @@
 //
 import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -16,29 +17,37 @@ final class ProfileViewController: UIViewController {
     private var userDescriptionLabel: UILabel?
     private let userProfile = ProfileService.profileService
     private let userPofileImageService = ProfileImageService.profileImageService
-//    private var userProfileImageURL: URL?
+    //    private var userProfileImageURL: URL?
     private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUIElements()
-//        userImageUpdateMonitor()
         
-        self.profileImageServiceObserver = NotificationCenter.default.addObserver(
-            forName: .userImageUrlUpdated,
-            object: nil,
-            queue: .main
-        ) {[weak self] notification in
-            self?.setUserImage(notification: notification)
+        if let url = userPofileImageService.avatarURL {
+            print("CONSOLE func viewDidLoad: ссылка уже есть на момент открытия профиля")
+            updateUserImage(url: url)
         }
         
+        NotificationCenter.default.addObserver(
+            forName: .userImageUrlUpdated,
+            object: nil,
+            queue: .main)  {[weak self] notification in
+                print("CONSOLE func viewDidLoad: Получено уведомление")
+                guard let url = self?.userPofileImageService.avatarURL else {
+                    return
+                }
+                self?.updateUserImage(url: url)
+            }
+        
+        userImageUrlUpdateMonitor()
     }
     
     /// настраиваем внешний вид экрана и графические элементы
     private func configureUIElements() {
         view.backgroundColor = .igBackground
-        let profileImage = UIImage(named: "user_profile_picture")
+        let profileImage = UIImage(named: "user_profile_picture_unautorized")
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
@@ -98,32 +107,54 @@ final class ProfileViewController: UIViewController {
     }
     
     /// устанавливаем аватар
-    private func setUserImage(notification: Notification) {
-        print("CONSOLE func updateAvatar:", notification.userInfo as Any)
+    private func updateUserImage(url: URL) {
+        print("CONSOLE func updateUserImage: Обновляем аватар")
+        guard let profileImageView else {
+            return
+        }
+        
+        let cache = ImageCache.default
+        cache.clearMemoryCache()
+        cache.clearDiskCache()
+        
+        profileImageView.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(
+            cornerRadius: 70,
+            backgroundColor: view.backgroundColor
+        )
+        
+        profileImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "user_profile_picture_unautorized"),
+            options: [.processor(processor)]
+        )
     }
     
     /// отслеживаем загрузку  аватара и запускаем его установку
-    private func userImageUpdateMonitor() {
+    private func userImageUrlUpdateMonitor() {
         self.profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: .userImageUrlUpdated,
             object: nil,
             queue: .main
         ) {[weak self] notification in
-            self?.setUserImage(notification: notification)
+            print("CONSOLE func userImageUrlUpdateMonitor: Получено уведомление!!!")
+            guard let userInfo = notification.userInfo,
+                  let urlAsString = userInfo["URL"] as? String,
+                  let url = URL(string: urlAsString) else {
+                return
+            }
+            self?.updateUserImage(url: url)
         }
     }
     
     // MARK: - IBAction
     @objc func logoutButtonAction() {
         guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
-        profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
-        userNameLabel.text = "User Name"
-        userLoginLabel.text = "@user_login"
-        userDescriptionLabel.text = "Description"
+//        profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
+//        userNameLabel.text = "User Name"
+//        userLoginLabel.text = "@user_login"
+//        userDescriptionLabel.text = "Description"
         
-        NotificationCenter.default.post(name: .userImageUrlUpdated,
-                                        object: self,
-                                        userInfo: ["URL?": self.userPofileImageService.avatarURL ?? ""])
-        
+        NotificationCenter.default.post(name: .userImageUrlUpdated, object: nil)
     }
 }
