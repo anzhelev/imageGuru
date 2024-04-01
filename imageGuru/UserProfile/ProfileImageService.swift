@@ -5,6 +5,7 @@
 //  Created by Andrey Zhelev on 26.03.2024.
 //
 import UIKit
+import Foundation
 
 final class ProfileImageService {
     
@@ -34,19 +35,18 @@ final class ProfileImageService {
     }
     
     private let userProfile = ProfileService.profileService
-    private (set) var avatarURL: URL?
-    private (set) var avatarURL2: String = "" {
-        didSet {            
-            NotificationCenter.default.post(name: .userImageUrlUpdated, object: self.avatarURL2)
-            print("CONSOLE avatarURL2.didSet: ", avatarURL2)
+    private (set) var avatarURL: URL? {
+        didSet {
+            print("CONSOLE avatarURL:", avatarURL?.absoluteString ?? "")
         }
     }
+//    private (set) var avatarURL2: String = ""
     private let dataLoader = DataLoader()
     private var task: URLSessionTask?
     
     // MARK: - Initializers
     private init() {
-        avatarURL = nil
+        //        avatarURL = nil
     }
     
     // MARK: - Public Methods
@@ -56,8 +56,7 @@ final class ProfileImageService {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let avatar):
-                    self.avatarURL = avatar.large
-                    self.avatarURL2 = self.avatarURL?.absoluteString ?? "URL"
+                    self.avatarURL = avatar
                     completion()
                 case .failure(let error):
                     print("CONSOLE func fetchUserProfileImageURL:", error.localizedDescription)
@@ -69,7 +68,7 @@ final class ProfileImageService {
     // MARK: - Private Methods
     
     /// функция получения url на фото профиля пользователя
-    private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<ProfileImageURLRequestResult, Error>) -> Void) {
+    private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)
         if task != nil {
             print("CONSOLE func fetchUserProfileImageURL: Отмена повторного сетевого запроса URL аватара для : \(username).")
@@ -84,8 +83,15 @@ final class ProfileImageService {
         
         let task = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
             switch result {
-            case .success(let userImageURL):
+            case .success(let url):
+                guard let userImageURL = url.large
+                else {
+                    return
+                }
                 completion(.success(userImageURL))
+                NotificationCenter.default.post(name: .userImageUrlUpdated,
+                                                object: self,
+                                                userInfo: ["URL?": userImageURL])
             case .failure(let error):
                 completion(.failure(error))
             }
