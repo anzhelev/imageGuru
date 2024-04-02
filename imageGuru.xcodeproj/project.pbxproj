@@ -150,7 +150,6 @@
 				D4176E662B6F9FAE0011F179 /* ImagesListViewController.swift */,
 				D44B83592B7B6349002A5662 /* ImagesListCell.swift */,
 				D4F1B3472B8B4E4000932BD1 /* SingleImageViewController.swift */,
-				D426A9032BBBFDD800B223CA /* TabBarController.swift */,
 			);
 			path = ImagesList;
 			sourceTree = "<group>";
@@ -190,6 +189,7 @@
 				D4D28C932BA5AF1E003458D9 /* SplashViewController.swift */,
 				D4C892A62BAD95C000197B76 /* UIBlockingProgressHUD.swift */,
 				D4B89E312BB8B25B007F937E /* AlertPresenter.swift */,
+				D426A9032BBBFDD800B223CA /* TabBarController.swift */,
 			);
 			path = SplashView;
 			sourceTree = "<group>";
