@@ -37,7 +37,7 @@ final class ProfileImageService {
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL? {
         didSet {
-            print("CONSOLE avatarURL:", avatarURL?.absoluteString ?? "")
+//            print("CONSOLE avatarURL:", avatarURL?.absoluteString ?? "")
         }
     }
     private let dataLoader = DataLoader()

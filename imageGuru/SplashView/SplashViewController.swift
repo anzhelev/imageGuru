@@ -14,14 +14,23 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private Properties
-    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
+    //    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let oAuth2Service = OAuth2Service.shared
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
     private let alertPresenter = AlertPresenter()
+    private let authViewController = AuthViewController()
     
     // MARK: - Lifecycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        authViewController.delegate = self
+        
+        configureUIElements()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -29,6 +38,8 @@ final class SplashViewController: UIViewController {
             showAlert(message: "Не удалось войти в систему")
             oAuth2Service.authorizationFailed.toggle()
         } else {
+            print("CONSOLE проверяем наличие данных пользователя")
+            
             userDataCheck()
         }
     }
@@ -37,7 +48,7 @@ final class SplashViewController: UIViewController {
     /// функция проверки наличия сохраненного токена и данных профиля пользователя
     func userDataCheck() {
         guard let token = oauth2TokenStorage.token else {
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            switchToAuthViewController()
             return
         }
         if userProfile.profile.username == "" {
@@ -66,30 +77,40 @@ final class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
     }
     
-    // MARK: - Overrided Methods
-    /// подготовка перехода на экран авторизации
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showAuthenticationScreenSegueIdentifier {
-            guard
-                let navigationController = segue.destination as? UINavigationController,
-                let viewController = navigationController.viewControllers[0] as? AuthViewController
-            else { fatalError("Failed to prepare for \(showAuthenticationScreenSegueIdentifier)") }
-            viewController.delegate = self
-        } else {
-            super.prepare(for: segue, sender: sender)
-        }
+    // MARK: - Private Methods
+    /// функция перехода на экран авторизации
+    func switchToAuthViewController() {
+        print("CONSOLE функция перехода на экран авторизации")
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as UIViewController
+        viewController.modalPresentationStyle = .fullScreen
+        self.present(viewController, animated: true, completion: nil)
     }
     
-    // MARK: - Private Methods
     /// фукнкция отображения алерта об ошибке при авторизации или загрузке профиля
     private func showAlert(message: String) {
         let alert = AlertModel(title: "Что-то пошло не так(",
                                text: message,
                                buttonText: "Ok") {[self] UIAlertAction in
-            performSegue(withIdentifier: showAuthenticationScreenSegueIdentifier, sender: nil)
+            switchToAuthViewController()
         }
         self.alertPresenter.showAlert(alert: alert, on: self)
-    }    
+    }
+    
+    /// настраиваем внешний вид экрана и графические элементы
+    private func configureUIElements() {
+        view.backgroundColor = .igBlack
+        let appLogoImage = UIImage(named: "launch_screen_logo")
+        let appLogoImageView = UIImageView(image: appLogoImage)
+        appLogoImageView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(appLogoImageView)
+        
+        NSLayoutConstraint.activate([
+            appLogoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            appLogoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+    }
+    
 }
 
 // MARK: - AuthViewControllerDelegate
