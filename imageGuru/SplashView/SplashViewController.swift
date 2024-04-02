@@ -14,19 +14,15 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private Properties
-    //    private let showAuthenticationScreenSegueIdentifier = "ShowAuthenticationScreen"
     private let oauth2TokenStorage = OAuth2TokenStorage()
     private let oAuth2Service = OAuth2Service.shared
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
     private let alertPresenter = AlertPresenter()
-    private let authViewController = AuthViewController()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        authViewController.delegate = self
         
         configureUIElements()
     }
@@ -79,10 +75,10 @@ final class SplashViewController: UIViewController {
     
     // MARK: - Private Methods
     /// функция перехода на экран авторизации
-    func switchToAuthViewController() {
+    private func switchToAuthViewController() {
         print("CONSOLE функция перехода на экран авторизации")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as UIViewController
+        let viewController = storyboard.instantiateViewController(withIdentifier: "CustomNavigationController") as UIViewController
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)
     }
