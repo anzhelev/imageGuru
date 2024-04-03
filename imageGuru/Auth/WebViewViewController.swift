@@ -46,11 +46,13 @@ final class WebViewViewController: UIViewController {
     }
     
     // MARK: - Private Methods
+    ///  отображаем прогресс бар при загрузке страницы авторизации
     private func updateProgress() {
         progressView.setProgress(Float(webView.estimatedProgress), animated: true)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
     }
     
+    /// функция загрузки страницы авторизации
     private func loadAuthView() {
         guard var urlComponents = URLComponents(string: Constants.unsplashAuthorizeURLString) else {
             return
@@ -62,7 +64,7 @@ final class WebViewViewController: UIViewController {
             URLQueryItem(name: "scope", value: Constants.accessScope)
         ]
         guard let url = urlComponents.url else {
-            print("CONSOLE func loadAuthView Ошибка создания URL")
+            print("CONSOLE func loadAuthView: Ошибка создания URL")
             return
         }
         let request = URLRequest(url: url)

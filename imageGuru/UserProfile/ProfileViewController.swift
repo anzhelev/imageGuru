@@ -26,15 +26,14 @@ final class ProfileViewController: UIViewController {
         configureUIElements()
         
         if let url = userPofileImageService.avatarURL {
-            print("CONSOLE func viewDidLoad: ссылка уже есть на момент открытия профиля")
             updateUserImage(url: url)
-        }        
+        }
         userImageUrlUpdateMonitor()
     }
     
     /// настраиваем внешний вид экрана и графические элементы
     private func configureUIElements() {
-        view.backgroundColor = .igBackground
+        view.backgroundColor = .igBlack
         let profileImage = UIImage(named: "user_profile_picture_unautorized")
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -93,8 +92,9 @@ final class ProfileViewController: UIViewController {
             labelDisableButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -14)
         ])
     }
- 
+    
     // MARK: - IBAction
+    /// действие по нажатию кнопки выхода из профиля
     @objc func logoutButtonAction() {
         guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
         profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
@@ -104,16 +104,11 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    /// устанавливаем аватар
+    /// функция загрузки и установки аватара с помощью KingFisher 
     private func updateUserImage(url: URL) {
-        print("CONSOLE func updateUserImage: Обновляем аватар")
         guard let profileImageView else {
             return
         }
-        
-        let cache = ImageCache.default
-        cache.clearMemoryCache()
-        cache.clearDiskCache()
         
         profileImageView.kf.indicatorType = .activity
         let processor = RoundCornerImageProcessor(
@@ -135,9 +130,9 @@ final class ProfileViewController: UIViewController {
             object: nil,
             queue: .main
         ) {[weak self] notification in
-            print("CONSOLE func userImageUrlUpdateMonitor: УВЕДОМЛЕНИЕ ПОЛУЧЕНО!")
             let urlAsString = String(describing: notification.userInfo?["URL"] ?? "")
             guard let url = URL(string: urlAsString) else {
+                print("CONSOLE func userImageUrlUpdateMonitor: Ошибка получения URL от NotificationCenter")
                 return
             }
             self?.updateUserImage(url: url)

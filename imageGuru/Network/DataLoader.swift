@@ -18,6 +18,7 @@ final class DataLoader {
     }
     
     // MARK: - Public Methods
+    /// generic функция сетевого запроса
     func objectTask<T: Decodable>( for request: URLRequest, completion: @escaping (Result<T, Error>) -> Void) -> URLSessionTask {
         
         let decoder = JSONDecoder()

@@ -34,8 +34,6 @@ final class SplashViewController: UIViewController {
             showAlert(message: "Не удалось войти в систему")
             oAuth2Service.authorizationFailed.toggle()
         } else {
-            print("CONSOLE проверяем наличие данных пользователя")
-            
             userDataCheck()
         }
     }
@@ -76,7 +74,6 @@ final class SplashViewController: UIViewController {
     // MARK: - Private Methods
     /// функция перехода на экран авторизации
     private func switchToAuthViewController() {
-        print("CONSOLE функция перехода на экран авторизации")
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "CustomNavigationController") as UIViewController
         viewController.modalPresentationStyle = .fullScreen

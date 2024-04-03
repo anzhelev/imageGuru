@@ -95,9 +95,8 @@ final class ProfileService {
         task.resume()
     }
     
-    /// функция сбора запроса для получения данных профиля пользователя
+    /// функция сборки запроса для получения данных профиля пользователя
     private func makeUserProfileDataRequest(token: String, url: String) -> URLRequest? {
-        
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
             print("CONSOLE func makeUserProfileDataRequest: Ошибка сборки URL для запроса данных профиля пользователя")

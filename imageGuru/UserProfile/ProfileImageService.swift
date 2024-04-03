@@ -37,16 +37,17 @@ final class ProfileImageService {
     private let userProfile = ProfileService.profileService
     private (set) var avatarURL: URL? {
         didSet {
-//            print("CONSOLE avatarURL:", avatarURL?.absoluteString ?? "")
+            /// уведомляем ProfileViewController об обновлении ссылки на аватар пользователя
+            NotificationCenter.default.post(name: .userImageUrlUpdated,
+                                            object: self,
+                                            userInfo: ["URL": avatarURL ?? ""])
         }
     }
     private let dataLoader = DataLoader()
     private var task: URLSessionTask?
     
     // MARK: - Initializers
-    private init() {
-        //        avatarURL = nil
-    }
+    private init() { }
     
     // MARK: - Public Methods
     /// функция обновления данных профиля пользователя
@@ -88,9 +89,6 @@ final class ProfileImageService {
                     return
                 }
                 completion(.success(userImageURL))
-                NotificationCenter.default.post(name: .userImageUrlUpdated,
-                                                object: self,
-                                                userInfo: ["URL": userImageURL])                
             case .failure(let error):
                 completion(.failure(error))
             }
@@ -105,7 +103,7 @@ final class ProfileImageService {
         
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
-            print("CONSOLE func makeUserProfileImageUrlRequest: Ошибка сборки URL для запроса картинки профиля пользователя")
+            print("CONSOLE func makeUserProfileImageUrlRequest: Ошибка сборки URL для запроса аватара пользователя")
             return nil
         }
         var request = URLRequest(url: url)

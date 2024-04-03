@@ -7,7 +7,7 @@
 
 import UIKit
 
-/// модель для отображения результатов квиза или ошибок
+/// модель для отображения алерта
 struct AlertModel {
     let title: String
     let text: String

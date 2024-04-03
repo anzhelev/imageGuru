@@ -32,6 +32,7 @@ final class OAuth2Service {
     private init() {}
     
     // MARK: - Public Methods
+    /// функция сетевого запроса для получения токена
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
         assert(Thread.isMainThread)
         
@@ -64,6 +65,7 @@ final class OAuth2Service {
     }
     
     // MARK: - Private Methods
+    /// функция сборки запроса для загрузки токена
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         
         guard let baseURL = URL(string: "https://unsplash.com"),
