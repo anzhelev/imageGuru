@@ -47,15 +47,15 @@ final class SplashViewController: UIViewController {
         }
         if userProfile.profile.username == "" {
             UIBlockingProgressHUD.show()
-            userProfile.updateProfileDetails(userToken: token) {[self] result in
+            userProfile.updateProfileDetails(userToken: token) {[weak self] result in
                 switch result {
                 case true:
-                    if userPofileImage.avatarURL == nil {
-                        userPofileImage.updateProfileImageURL(userToken: token) { }
+                    if self?.userPofileImage.avatarURL == nil {
+                        self?.userPofileImage.updateProfileImageURL(userToken: token) { }
                     }
-                    switchToTabBarController()
+                    self?.switchToTabBarController()
                 case false:
-                    showAlert(message: "Не удалось получить данные профиля")
+                    self?.showAlert(message: "Не удалось получить данные профиля")
                 }
             }
         } else {

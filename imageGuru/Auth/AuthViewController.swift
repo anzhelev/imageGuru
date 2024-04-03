@@ -56,17 +56,17 @@ final class AuthViewController: UIViewController {
     
     /// функция запроса токена с передачей авторизационного кода
     private func fetchOAuthToken(_ code: String) {
-        oAuth2Service.fetchOAuthToken(code) {result in
+        oAuth2Service.fetchOAuthToken(code) {[weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let token):
-                    self.oAuth2Service.task = nil
-                    self.oAuth2Service.lastCode = nil
-                    self.oauth2TokenStorage.token = token
-                    self.splashViewController.userDataCheck()
+                    self?.oAuth2Service.task = nil
+                    self?.oAuth2Service.lastCode = nil
+                    self?.oauth2TokenStorage.token = token
+                    self?.splashViewController.userDataCheck()
                 case .failure(let error):
                     print("CONSOLE func fetchOAuthToken:", error.self)
-                    self.oAuth2Service.authorizationFailed = true
+                    self?.oAuth2Service.authorizationFailed = true
                 }
             }
         }

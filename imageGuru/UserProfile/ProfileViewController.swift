@@ -104,7 +104,7 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - Private Methods
-    /// функция загрузки и установки аватара с помощью KingFisher 
+    /// функция загрузки и установки аватара с помощью KingFisher
     private func updateUserImage(url: URL) {
         guard let profileImageView else {
             return
