@@ -4,7 +4,9 @@
 //
 //  Created by Andrey Zhelev on 23.02.2024.
 //
+import Foundation
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
@@ -13,21 +15,38 @@ final class ProfileViewController: UIViewController {
     private var userNameLabel: UILabel?
     private var userLoginLabel: UILabel?
     private var userDescriptionLabel: UILabel?
+    private let userProfile = ProfileService.profileService
+    private let userPofileImageService = ProfileImageService.profileImageService
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .igBackground
+        configureUIElements()
         
-        let profileImage = UIImage(named: "user_profile_picture")
+        if let url = userPofileImageService.avatarURL {
+            updateUserImage(url: url)
+        }
+        userImageUrlUpdateMonitor()
+    }
+    
+    /// настраиваем внешний вид экрана и графические элементы
+    private func configureUIElements() {
+        view.backgroundColor = .igBlack
+        let profileImage = UIImage(named: "user_profile_picture_unautorized")
         let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
         self.profileImageView = profileImageView
         
         let userNameLabel = UILabel()
-        userNameLabel.text = "Екатерина Новикова"
+        if let userLastName = userProfile.profile.lastName {
+            userNameLabel.text = "\(userProfile.profile.firstName) \(userLastName)"
+        }
+        else {
+            userNameLabel.text = userProfile.profile.firstName
+        }
         userNameLabel.font = UIFont(name: "SFPro-Bold", size: 23)
         userNameLabel.textColor = .igWhite
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +54,7 @@ final class ProfileViewController: UIViewController {
         self.userNameLabel = userNameLabel
         
         let userLoginLabel = UILabel()
-        userLoginLabel.text = "@ekaterina_nov"
+        userLoginLabel.text = userProfile.profile.loginName
         userLoginLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userLoginLabel.textColor = .igGray
         userLoginLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -43,7 +62,7 @@ final class ProfileViewController: UIViewController {
         self.userLoginLabel = userLoginLabel
         
         let userDescriptionLabel = UILabel()
-        userDescriptionLabel.text = "Hello, world!"
+        userDescriptionLabel.text = userProfile.profile.bio ?? "пусто"
         userDescriptionLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userDescriptionLabel.textColor = .igWhite
         userDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -75,11 +94,48 @@ final class ProfileViewController: UIViewController {
     }
     
     // MARK: - IBAction
+    /// действие по нажатию кнопки выхода из профиля
     @objc func logoutButtonAction() {
         guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
         profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
         userNameLabel.text = "User Name"
         userLoginLabel.text = "@user_login"
         userDescriptionLabel.text = "Description"
+    }
+    
+    // MARK: - Private Methods
+    /// функция загрузки и установки аватара с помощью KingFisher
+    private func updateUserImage(url: URL) {
+        guard let profileImageView else {
+            return
+        }
+        
+        profileImageView.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(
+            cornerRadius: 10000,
+            backgroundColor: view.backgroundColor
+        )
+        
+        profileImageView.kf.setImage(
+            with: url,
+            placeholder: UIImage(named: "user_profile_picture_unautorized"),
+            options: [.processor(processor)]
+        )
+    }
+    
+    /// отслеживаем загрузку  аватара и запускаем его установку
+    private func userImageUrlUpdateMonitor() {
+        self.profileImageServiceObserver = NotificationCenter.default.addObserver(
+            forName: .userImageUrlUpdated,
+            object: nil,
+            queue: .main
+        ) {[weak self] notification in
+            let urlAsString = String(describing: notification.userInfo?["URL"] ?? "")
+            guard let url = URL(string: urlAsString) else {
+                print("CONSOLE func userImageUrlUpdateMonitor: Ошибка получения URL от NotificationCenter")
+                return
+            }
+            self?.updateUserImage(url: url)
+        }
     }
 }

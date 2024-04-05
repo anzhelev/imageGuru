@@ -15,58 +15,57 @@ final class OAuth2Service {
     
     // MARK: - Public Properties
     static let shared = OAuth2Service()
+    static var authorizationFailed: Bool = false
+    var task: URLSessionTask?
+    var lastCode: String?    
     
     // MARK: - Private Properties
-    private enum FetchOAuthToken: Error {
-        case URLSessionDataTaskError
-        case tokenRequestError
-        case dataError
-        case JSONDecodeError
+    /// кейсы возможных ошибок при запросе токена
+    private enum FetchOAuthTokenErrors: Error {
+        case requestOverlap
+        case requestCreationError
     }
+    
+    private let dataLoader = DataLoader()
     
     // MARK: - Initializers
     private init() {}
     
     // MARK: - Public Methods
+    /// функция сетевого запроса для получения токена
     func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        if lastCode == code {
+            completion(.failure(FetchOAuthTokenErrors.requestOverlap))
+            return
+        } else if task != nil {
+            task?.cancel()
+            print("CONSOLE func fetchOAuthToken: Отмена предыдущего незавершенного сетевого запроса.")
+        }
+        
+        lastCode = code
         
         guard let request = makeOAuthTokenRequest(code: code) else {
-            print("CONSOLE func fetchOAuthToken Ошибка создания запроса токена")
+            completion(.failure(FetchOAuthTokenErrors.requestCreationError))
             return
         }
         
-        let task = URLSession.shared.dataTask(with: request) {data, response, error in
-            
-            if error != nil {
-                completion(.failure(FetchOAuthToken.URLSessionDataTaskError))
-                return
-            }
-            
-            if let response = response as? HTTPURLResponse,
-               response.statusCode < 200 || response.statusCode >= 300 {
-                completion(.failure(FetchOAuthToken.tokenRequestError))
-                return
-            }
-            
-            guard let data = data
-            else {
-                completion(.failure(FetchOAuthToken.dataError))
-                return
-            }
-            do {
-                let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let token = try decoder.decode(OAuthTokenResponseBody.self, from: data)
+        let task = dataLoader.objectTask(for: request) {(result: Result<OAuthTokenResponseBody, Error>) in
+            switch result {
+            case .success(let token):
                 completion(.success(token.accessToken))
-            } catch _ {
-                completion(.failure(FetchOAuthToken.JSONDecodeError))
-                return
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
+        
+        self.task = task
         task.resume()
     }
     
     // MARK: - Private Methods
+    /// функция сборки запроса для загрузки токена
     private func makeOAuthTokenRequest(code: String) -> URLRequest? {
         
         guard let baseURL = URL(string: "https://unsplash.com"),
@@ -79,7 +78,8 @@ final class OAuth2Service {
                 + "&&grant_type=authorization_code",
                 relativeTo: baseURL
               ) else {
-            print("CONSOLE func makeOAuthTokenRequest Ошибка создания URL")
+            assertionFailure("Failed to create URL")
+            print("CONSOLE func makeOAuthTokenRequest: Ошибка сборки URL для запроса токена")
             return nil
         }
         var request = URLRequest(url: url)
