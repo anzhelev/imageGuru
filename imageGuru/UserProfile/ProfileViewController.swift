@@ -112,7 +112,7 @@ final class ProfileViewController: UIViewController {
         
         profileImageView.kf.indicatorType = .activity
         let processor = RoundCornerImageProcessor(
-            cornerRadius: 70,
+            cornerRadius: 10000,
             backgroundColor: view.backgroundColor
         )
         

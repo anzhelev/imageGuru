@@ -14,11 +14,8 @@ final class SplashViewController: UIViewController {
     }
     
     // MARK: - Private Properties
-    private let oauth2TokenStorage = OAuth2TokenStorage()
-    private let oAuth2Service = OAuth2Service.shared
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
-    private let alertPresenter = AlertPresenter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -30,9 +27,9 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if oAuth2Service.authorizationFailed {
+        if OAuth2Service.authorizationFailed {
             showAlert(message: "Не удалось войти в систему")
-            oAuth2Service.authorizationFailed.toggle()
+            OAuth2Service.authorizationFailed.toggle()
         } else {
             userDataCheck()
         }
@@ -41,13 +38,14 @@ final class SplashViewController: UIViewController {
     // MARK: - Public Methods
     /// функция проверки наличия сохраненного токена и данных профиля пользователя
     func userDataCheck() {
-        guard let token = oauth2TokenStorage.token else {
+        guard let token = OAuth2TokenStorage.token else {
             switchToAuthViewController()
             return
         }
         if userProfile.profile.username == "" {
             UIBlockingProgressHUD.show()
             userProfile.updateProfileDetails(userToken: token) {[weak self] result in
+                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case true:
                     if self?.userPofileImage.avatarURL == nil {
@@ -87,7 +85,7 @@ final class SplashViewController: UIViewController {
                                buttonText: "Ok") {[self] UIAlertAction in
             switchToAuthViewController()
         }
-        self.alertPresenter.showAlert(alert: alert, on: self)
+        AlertPresenter.showAlert(alert: alert, on: self)
     }
     
     /// настраиваем внешний вид экрана и графические элементы

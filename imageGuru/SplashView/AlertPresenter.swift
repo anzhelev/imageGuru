@@ -16,7 +16,7 @@ struct AlertModel {
 }
 
 final class AlertPresenter {
-    func showAlert(alert model: AlertModel, on screen: UIViewController) {
+    static func showAlert(alert model: AlertModel, on screen: UIViewController) {
         let alert = UIAlertController(
             title: model.title,
             message: model.text,

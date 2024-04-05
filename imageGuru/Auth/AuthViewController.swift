@@ -24,7 +24,6 @@ final class AuthViewController: UIViewController {
     // MARK: - Private Properties
     private let showWebWievControllerSegueIdentifier = "ShowWebView"
     private let oAuth2Service = OAuth2Service.shared
-    private let oauth2TokenStorage = OAuth2TokenStorage()
     private let splashViewController = SplashViewController()
     
     // MARK: - Lifecycle
@@ -62,11 +61,11 @@ final class AuthViewController: UIViewController {
                 case .success(let token):
                     self?.oAuth2Service.task = nil
                     self?.oAuth2Service.lastCode = nil
-                    self?.oauth2TokenStorage.token = token
+                    OAuth2TokenStorage.token = token
                     self?.splashViewController.userDataCheck()
                 case .failure(let error):
                     print("CONSOLE func fetchOAuthToken:", error.self)
-                    self?.oAuth2Service.authorizationFailed = true
+                    OAuth2Service.authorizationFailed = true
                 }
             }
         }

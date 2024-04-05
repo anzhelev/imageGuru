@@ -15,7 +15,7 @@ final class OAuth2TokenStorage {
     }
     
     // MARK: - Computed Properties
-    var token: String? {
+    static var token: String? {
         get {
             return KeychainWrapper.standard.string(forKey: Keys.token.rawValue)
         }

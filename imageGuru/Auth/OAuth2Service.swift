@@ -15,9 +15,9 @@ final class OAuth2Service {
     
     // MARK: - Public Properties
     static let shared = OAuth2Service()
+    static var authorizationFailed: Bool = false
     var task: URLSessionTask?
-    var lastCode: String?
-    var authorizationFailed: Bool = false
+    var lastCode: String?    
     
     // MARK: - Private Properties
     /// кейсы возможных ошибок при запросе токена

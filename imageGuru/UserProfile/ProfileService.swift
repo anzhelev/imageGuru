@@ -48,7 +48,6 @@ final class ProfileService {
     func updateProfileDetails(userToken: String, completion: @escaping (Bool) -> Void) {
         self.fetchUserProfileData(token: userToken) {result in
             DispatchQueue.main.async {
-                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case .success(let profile):
                     self.profile.username = profile.username
