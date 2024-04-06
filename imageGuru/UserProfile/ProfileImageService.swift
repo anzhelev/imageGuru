@@ -15,18 +15,12 @@ final class ProfileImageService {
     // MARK: - Private Properties
     /// структура данных ответа сервера на запрос url фото профиля
     private struct ProfileImageURLRequestResult: Decodable {
-        enum RootKeys: String, CodingKey {
-            case profileImage
-        }
-        enum NestedKeys: String, CodingKey {
-            case large
-        }
+        let profileImage: ImageSize
+    }
+    private struct ImageSize: Decodable{
+        let small: URL?
+        let medium: URL?
         let large: URL?
-        init(from decoder: Decoder) throws {
-            let root = try decoder.container(keyedBy: RootKeys.self)
-            let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
-            large = try nested.decode(URL.self, forKey: .large)
-        }
     }
     
     /// кейсы возможных ошибок при запросе данных профиля пользователя
@@ -84,7 +78,7 @@ final class ProfileImageService {
         let task = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
             switch result {
             case .success(let url):
-                guard let userImageURL = url.large
+                guard let userImageURL = url.profileImage.large
                 else {
                     return
                 }

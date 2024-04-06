@@ -9,4 +9,5 @@ import Foundation
 
 extension Notification.Name {
     static let userImageUrlUpdated = Notification.Name(rawValue: "userImageUrlUpdated")
+    static let imageListUpdated = Notification.Name(rawValue: "ImagesListServiceDidChange")
 }
