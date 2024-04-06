@@ -18,6 +18,7 @@ final class ProfileViewController: UIViewController {
     private let userProfile = ProfileService.profileService
     private let userPofileImageService = ProfileImageService.profileImageService
     private var profileImageServiceObserver: NSObjectProtocol?
+    private var imageListService = ImagesListService()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -101,6 +102,7 @@ final class ProfileViewController: UIViewController {
         userNameLabel.text = "User Name"
         userLoginLabel.text = "@user_login"
         userDescriptionLabel.text = "Description"
+        self.imageListService.fetchPhotosNextPage()
     }
     
     // MARK: - Private Methods

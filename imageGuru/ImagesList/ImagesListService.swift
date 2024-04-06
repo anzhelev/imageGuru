@@ -23,15 +23,15 @@ final class ImagesListService {
     /// структура для декодирования данных полученных от сервера
     private struct PhotoPageResult: Decodable {
         let id: String
-        let createdAt: Date
+        let createdAt: String
         let width: Int
         let height: Int
-        let description: String
+        let description: String?
         let urls: PhotoUrls
     }
     private struct PhotoUrls: Decodable {
-        let full: URL?
-        let thumbs: URL?
+        let full: String
+        let thumb: String
     }
     
     /// кейсы возможных ошибок при запросе данных профиля пользователя
@@ -54,6 +54,7 @@ final class ImagesListService {
         let nextPage = (lastLoadedPage ?? 0) + 1
         
         let requestUrl = "https://api.unsplash.com/photos?page=\(nextPage)&per_page=10"
+//        print("CONSOLE:", requestUrl)
         guard let request = makeNextPageRequest(url: requestUrl) else {
             print("CONSOLE func fetchPhotosNextPage: Ошибка сборки запроса страницы с картинками")
             return
@@ -68,19 +69,20 @@ final class ImagesListService {
                         let item = $0
                         newPhoto.id = item.id
                         newPhoto.size = CGSize(width: CGFloat(item.width), height: CGFloat(item.height))
-                        newPhoto.createdAt = item.createdAt
+                        newPhoto.createdAt = item.createdAt.convertToDate()
                         newPhoto.welcomeDescription = item.description
-                        newPhoto.thumbImageURL = String(describing: item.urls.thumbs)
-                        newPhoto.largeImageURL = String(describing: item.urls.full)
+                        newPhoto.thumbImageURL = item.urls.thumb
+                        newPhoto.largeImageURL = item.urls.full
                         self.photos.append(newPhoto)
                         self.lastLoadedPage = nextPage
-                        NotificationCenter.default.post(name: .userImageUrlUpdated,
+                        NotificationCenter.default.post(name: .imageListUpdated,
                                                         object: self,
                                                         userInfo: ["ImageLoaded": newPhoto.id])
                     }
                     //                completion(.success(userImageURL))
                     
                 case .failure(let error):
+                    print("CONSOLE func fetchPhotosNextPage:", error.localizedDescription)
                     //                completion(.failure(error))
                     return
                 }
@@ -92,8 +94,7 @@ final class ImagesListService {
         
 
     }
-    
-    
+        
     /// функция сбора запроса для получения следующей страницы списка картинок
     private func makeNextPageRequest(url: String) -> URLRequest? {
         

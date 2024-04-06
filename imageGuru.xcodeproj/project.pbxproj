@@ -18,6 +18,8 @@
 		D42B256F2B714B2000C923FF /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B256E2B714B2000C923FF /* UIColor+Extension.swift */; };
 		D433B0EC2BB9CFCB000A6C8F /* NotificationName+Extention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */; };
 		D445192D2BC14E3D0015702F /* ImagesListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D445192C2BC14E3D0015702F /* ImagesListService.swift */; };
+		D44519352BC1DC2A0015702F /* ImagesListServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44519342BC1DC2A0015702F /* ImagesListServiceTests.swift */; };
+		D445193C2BC1F93F0015702F /* String+convertToDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D445193B2BC1F93F0015702F /* String+convertToDate.swift */; };
 		D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B83592B7B6349002A5662 /* ImagesListCell.swift */; };
 		D44DEF402B99D0B800A703F2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */; };
 		D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF422B99D34900A703F2 /* WebViewViewController.swift */; };
@@ -37,6 +39,16 @@
 		D4F90A162BA22BE40042AA47 /* OAuth2TokenStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F90A152BA22BE40042AA47 /* OAuth2TokenStorage.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D44519362BC1DC2A0015702F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4176E572B6F9FAE0011F179 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4176E5E2B6F9FAE0011F179;
+			remoteInfo = imageGuru;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		D408B7042BB6D002004C42C2 /* DataLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
@@ -51,6 +63,9 @@
 		D42B256E2B714B2000C923FF /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extention.swift"; sourceTree = "<group>"; };
 		D445192C2BC14E3D0015702F /* ImagesListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListService.swift; sourceTree = "<group>"; };
+		D44519322BC1DC2A0015702F /* imageGuruTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = imageGuruTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D44519342BC1DC2A0015702F /* ImagesListServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListServiceTests.swift; sourceTree = "<group>"; };
+		D445193B2BC1F93F0015702F /* String+convertToDate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+convertToDate.swift"; sourceTree = "<group>"; };
 		D44B83592B7B6349002A5662 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		D44DEF422B99D34900A703F2 /* WebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +93,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D445192F2BC1DC2A0015702F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -93,6 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				D4176E612B6F9FAE0011F179 /* imageGuru */,
+				D44519332BC1DC2A0015702F /* imageGuruTests */,
 				D4176E602B6F9FAE0011F179 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +124,7 @@
 			isa = PBXGroup;
 			children = (
 				D4176E5F2B6F9FAE0011F179 /* imageGuru.app */,
+				D44519322BC1DC2A0015702F /* imageGuruTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -130,6 +154,7 @@
 				D49C8D392B9360B600CB0DC5 /* Constants.swift */,
 				D49245A42BA6233400D4FCD8 /* CustomNavigationController.swift */,
 				D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */,
+				D445193B2BC1F93F0015702F /* String+convertToDate.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -141,6 +166,14 @@
 				D4176E6B2B6F9FAF0011F179 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		D44519332BC1DC2A0015702F /* imageGuruTests */ = {
+			isa = PBXGroup;
+			children = (
+				D44519342BC1DC2A0015702F /* ImagesListServiceTests.swift */,
+			);
+			path = imageGuruTests;
 			sourceTree = "<group>";
 		};
 		D44B835B2B7B6651002A5662 /* ImagesList */ = {
@@ -219,6 +252,24 @@
 			productReference = D4176E5F2B6F9FAE0011F179 /* imageGuru.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D44519312BC1DC2A0015702F /* imageGuruTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D44519382BC1DC2A0015702F /* Build configuration list for PBXNativeTarget "imageGuruTests" */;
+			buildPhases = (
+				D445192E2BC1DC2A0015702F /* Sources */,
+				D445192F2BC1DC2A0015702F /* Frameworks */,
+				D44519302BC1DC2A0015702F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D44519372BC1DC2A0015702F /* PBXTargetDependency */,
+			);
+			name = imageGuruTests;
+			productName = imageGuruTests;
+			productReference = D44519322BC1DC2A0015702F /* imageGuruTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -226,11 +277,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1530;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					D4176E5E2B6F9FAE0011F179 = {
 						CreatedOnToolsVersion = 15.0.1;
+					};
+					D44519312BC1DC2A0015702F = {
+						CreatedOnToolsVersion = 15.3;
+						TestTargetID = D4176E5E2B6F9FAE0011F179;
 					};
 				};
 			};
@@ -253,6 +308,7 @@
 			projectRoot = "";
 			targets = (
 				D4176E5E2B6F9FAE0011F179 /* imageGuru */,
+				D44519312BC1DC2A0015702F /* imageGuruTests */,
 			);
 		};
 /* End PBXProject section */
@@ -265,6 +321,13 @@
 				D4AEA2422B9B474D00C080C8 /* SF Pro.ttf in Resources */,
 				D4176E6C2B6F9FAF0011F179 /* Assets.xcassets in Resources */,
 				D4176E6A2B6F9FAE0011F179 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D44519302BC1DC2A0015702F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -285,6 +348,7 @@
 				D445192D2BC14E3D0015702F /* ImagesListService.swift in Sources */,
 				D49D699D2BB297BD00A3BFA7 /* ProfileImageService.swift in Sources */,
 				D4F90A122BA060610042AA47 /* OAuth2Service.swift in Sources */,
+				D445193C2BC1F93F0015702F /* String+convertToDate.swift in Sources */,
 				D408B7052BB6D002004C42C2 /* DataLoader.swift in Sources */,
 				D4D28C942BA5AF1E003458D9 /* SplashViewController.swift in Sources */,
 				D4F1B3482B8B4E4000932BD1 /* SingleImageViewController.swift in Sources */,
@@ -300,7 +364,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D445192E2BC1DC2A0015702F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D44519352BC1DC2A0015702F /* ImagesListServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D44519372BC1DC2A0015702F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4176E5E2B6F9FAE0011F179 /* imageGuru */;
+			targetProxy = D44519362BC1DC2A0015702F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		D4176E682B6F9FAE0011F179 /* Main.storyboard */ = {
@@ -497,6 +577,44 @@
 			};
 			name = Release;
 		};
+		D44519392BC1DC2A0015702F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X4BLSQ8U23;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.yandex.practicum.imageGuruTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/imageGuru.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/imageGuru";
+			};
+			name = Debug;
+		};
+		D445193A2BC1DC2A0015702F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = X4BLSQ8U23;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = ru.yandex.practicum.imageGuruTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/imageGuru.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/imageGuru";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -514,6 +632,15 @@
 			buildConfigurations = (
 				D4176E742B6F9FAF0011F179 /* Debug */,
 				D4176E752B6F9FAF0011F179 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D44519382BC1DC2A0015702F /* Build configuration list for PBXNativeTarget "imageGuruTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D44519392BC1DC2A0015702F /* Debug */,
+				D445193A2BC1DC2A0015702F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

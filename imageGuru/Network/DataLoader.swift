@@ -14,7 +14,7 @@ final class DataLoader {
         case requestFail(Error)
         case wrongServerResponce(String)
         case wrondData
-        case JSONDecodeError(Error)
+        case JSONDecodeError(String)
     }
     
     // MARK: - Public Methods
@@ -47,7 +47,7 @@ final class DataLoader {
                 let decodedData = try decoder.decode(T.self, from: data)
                 completion(.success(decodedData))
             } catch {
-                completion(.failure(DataLoaderErrors.JSONDecodeError(error)))
+                completion(.failure(DataLoaderErrors.JSONDecodeError("Ошибка декодирования данных.")))
                 return
             }
         }
