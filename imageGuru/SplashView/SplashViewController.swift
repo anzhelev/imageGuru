@@ -16,6 +16,7 @@ final class SplashViewController: UIViewController {
     // MARK: - Private Properties
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
+    private let imagesListService = ImagesListService.imagesListService
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -51,13 +52,17 @@ final class SplashViewController: UIViewController {
                     if self?.userPofileImage.avatarURL == nil {
                         self?.userPofileImage.updateProfileImageURL(userToken: token) { }
                     }
-                    self?.switchToTabBarController()
+                    self?.imagesListService.fetchPhotosNextPage { [weak self] in
+                        self?.switchToTabBarController()
+                    }
                 case false:
                     self?.showAlert(message: "Не удалось получить данные профиля")
                 }
             }
         } else {
-            switchToTabBarController()
+            imagesListService.fetchPhotosNextPage { [weak self] in
+                self?.switchToTabBarController()
+            }
         }
     }
     
@@ -101,7 +106,6 @@ final class SplashViewController: UIViewController {
             appLogoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
-    
 }
 
 // MARK: - AuthViewControllerDelegate

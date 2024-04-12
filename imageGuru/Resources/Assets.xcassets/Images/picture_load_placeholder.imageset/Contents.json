@@ -1,17 +1,15 @@
 {
   "images" : [
     {
-      "filename" : "scribble.variable.png",
+      "filename" : "Stub.svg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "scribble.variable@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "scribble.variable@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
