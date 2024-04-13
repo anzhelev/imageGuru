@@ -48,13 +48,15 @@ final class SingleImageViewController: UIViewController {
     }
     
     // MARK: - Private methods
+    /// функция загрузки полноразмерного фото 
     private func setImageWithKF() {
-        imageView.kf.indicatorType = .activity
         guard let imageURL else {
             return
         }
+        UIBlockingProgressHUD.show()
         imageView.kf.setImage(with: imageURL) {[weak self] result in
             DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
                 switch result {
                 case .success:
                     guard let image = self?.imageView.image else { return }
@@ -63,10 +65,24 @@ final class SingleImageViewController: UIViewController {
                     self?.rescaleImageInScrollView(image: image)
                 case .failure(let error):
                     print("CONSOLE func setImageWithKF: Ошибка загрузки фото", error.localizedDescription)
+                    
+                    // показываем алерт при неудачной загрузке полноразмерного фото
+                    if let self {
+                        let alert = AlertModel(title: "Что-то пошло не так(",
+                                               text: "Попробовать еще раз?",
+                                               buttonText: "Повторить",
+                                               action: {_ in
+                            self.setImageWithKF()
+                        },
+                                               secondButtonText: "Не надо"
+                        )
+                        AlertPresenter.showAlert(alert: alert, on: self)
+                    }
                 }
             }
         }
     }
+    
     /// функция центрирования картинки на экране
     private func centerImageInScrollView(visibleRectSize: CGSize, newContentSize: CGSize) {
         let x = (visibleRectSize.width - newContentSize.width) / 2

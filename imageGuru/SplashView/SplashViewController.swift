@@ -87,9 +87,10 @@ final class SplashViewController: UIViewController {
     private func showAlert(message: String) {
         let alert = AlertModel(title: "Что-то пошло не так(",
                                text: message,
-                               buttonText: "Ok") {[self] UIAlertAction in
+                               buttonText: "Ok",
+                               action: {[self] UIAlertAction in
             switchToAuthViewController()
-        }
+        })
         AlertPresenter.showAlert(alert: alert, on: self)
     }
     
