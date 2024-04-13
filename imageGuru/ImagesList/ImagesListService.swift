@@ -24,6 +24,11 @@ final class ImagesListService {
     var task: URLSessionTask?
     
     // MARK: - Private Properties
+    /// структура ответа сервера для изменения Лайк-статуса фото
+    private struct PhotoLikeModifyResult: Decodable {
+        let photo: PhotoPageResult
+    }
+    
     /// структура для декодирования данных полученных от сервера
     private struct PhotoPageResult: Decodable {
         let id: String
@@ -47,7 +52,7 @@ final class ImagesListService {
     private (set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private let dataLoader = DataLoader()
-    
+    private var changeLikeTask: URLSessionTask?
     private let photosPerPage = 10
     
     // MARK: - Initializers
@@ -63,14 +68,16 @@ final class ImagesListService {
         }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
-        let requestUrl = "https://api.unsplash.com/photos?page=\(nextPage)&per_page=\(photosPerPage)"
-        guard let request = makeNextPageRequest(url: requestUrl) else {
+        guard let request = makeImageServiceRequest(url: "https://api.unsplash.com/photos?page=\(nextPage)&per_page=\(photosPerPage)",
+                                                    httpMethod: "GET"
+        ) else {
             print("CONSOLE func fetchPhotosNextPage: Ошибка сборки запроса страницы с картинками")
             return
         }
         
         let task = dataLoader.objectTask(for: request) {(result: Result<[PhotoPageResult], Error>) in
             DispatchQueue.main.async {
+                self.task = nil
                 switch result {
                 case .success(let list):
                     var newPhotosAdded = 0
@@ -92,6 +99,8 @@ final class ImagesListService {
                             }
                             let newPhoto = Photo (id: item.id,
                                                   size: CGSize(width: item.width, height: item.height),
+                                                  createdAt: item.createdAt.convertToDate(),
+                                                  welcomeDescription: item.description,
                                                   thumbImageURL: thumbImageURL,
                                                   largeImageURL: largeImageURL,
                                                   isLiked: item.likedByUser)
@@ -103,9 +112,8 @@ final class ImagesListService {
                                                             userInfo: ["ImageLoaded": newPhoto.id])
                         }
                     }
-                    self.task = nil
                     self.lastLoadedPage = nextPage
-                    print("CONSOLE func fetchPhotosNextPage: Добавлено ноывых фото: ", newPhotosAdded)
+                    print("CONSOLE func fetchPhotosNextPage: Добавлено ноывых фото:", newPhotosAdded)
                     if nextPage == 1 {
                         completion()
                     }
@@ -120,29 +128,56 @@ final class ImagesListService {
         self.task = task
         task.resume()
     }
-
+    
     /// функция изменения статуса фото Лайк/Дизлайк
-    func changeLike(photoId: String, isLike: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
-        //        let currentState =
+    func changeLike(photoIndex: Int, completion: @escaping (Result<Bool, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        if changeLikeTask != nil {
+            print("CONSOLE func changeLike: Отмена повторного сетевого запроса.")
+            return
+        }
+        
+        guard let request = makeImageServiceRequest(url: "https://api.unsplash.com/photos/\(photos[photoIndex].id)/like",
+                                                    httpMethod: photos[photoIndex].isLiked ? "DELETE" : "POST"
+        ) else {
+            print("CONSOLE func changeLike: Ошибка сборки запроса")
+            return
+        }
+        
+        let changeLikeTask = dataLoader.objectTask(for: request) {(result: Result<PhotoLikeModifyResult, Error>) in
+            DispatchQueue.main.async {
+                self.changeLikeTask = nil
+                switch result {
+                case .success(let photoInfo):
+                    self.photos[photoIndex].isLiked = photoInfo.photo.likedByUser
+                    completion(.success(photoInfo.photo.likedByUser))
+                    
+                case .failure(let error):
+                    completion(.failure(error))
+                    return
+                }
+            }
+        }
+        self.changeLikeTask = changeLikeTask
+        changeLikeTask.resume()
     }
     
     // MARK: - Private methods
-    /// функция сбора запроса для получения следующей страницы списка картинок
-    private func makeNextPageRequest(url: String) -> URLRequest? {
-        
+    /// функция сбора запроса данных о фото
+    private func makeImageServiceRequest(url: String, httpMethod: String) -> URLRequest? {
         guard let url = URL(string: url) else {
             assertionFailure("Failed to create URL")
-            print("CONSOLE func makeNextPageRequest: Ошибка сборки URL для запроса страницы с картинками")
+            print("CONSOLE func makeImageServiceRequest: Ошибка сборки URL для запроса данных о фото")
             return nil
         }
         guard let token = OAuth2TokenStorage.token else {
             assertionFailure("Failed to get token from OAuth2TokenStorage")
-            print("CONSOLE func makeNextPageRequest: Ошибка получения токена от OAuth2TokenStorage")
+            print("CONSOLE func makeImageServiceRequest: Ошибка получения токена от OAuth2TokenStorage")
             return nil
         }
         var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.httpMethod = "GET"
+        request.httpMethod = httpMethod
         return request
     }
 }

@@ -50,6 +50,7 @@ final class ImagesListViewController: UIViewController {
     }
     
     // MARK: - Public methods
+    /// перерисовываем таблицу при добавлении новых фото
     func updateTableViewAnimated() {
         let oldCount = photos.count
         let newCount = imagesListService.photos.count
@@ -80,10 +81,9 @@ final class ImagesListViewController: UIViewController {
     /// настройка внешнего вида ячейки и компонентов
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         setImageWithKF(for: cell, with: indexPath)
-        cell.dateLabel.text = dateToString(self.photos[indexPath.row].createdAt)
+        cell.dateLabel.text = self.photos[indexPath.row].createdAt.convertToStringRu()
         
-        let isFavorite = indexPath.row % 2 == 0
-        let favoriteImage = isFavorite ? UIImage(named: "favorites_active") : UIImage(named: "favorites_no_active")
+        let favoriteImage = UIImage(named: self.photos[indexPath.row].isLiked ? "favorites_active" : "favorites_no_active")
         cell.favoritesButton.setImage(favoriteImage, for: .normal)
         
         // добавляем градиент на поле с датой
@@ -94,13 +94,6 @@ final class ImagesListViewController: UIViewController {
         gradient.frame = cell.gradientView.bounds
         gradient.colors = [UIColor.igGradientAlpha0.cgColor, UIColor.igGradientAlpha20.cgColor]
         cell.gradientView.layer.insertSublayer(gradient, at: 0)
-    }
-    
-    ///  функция форматирования даты в строку
-    private func dateToString(_ date: Date?) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "dd MMMM yyyy"
-        return df.string(from: date ?? Date())
     }
 }
 
@@ -116,6 +109,8 @@ extension ImagesListViewController: UITableViewDataSource {
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        imageListCell.delegate = self
+        
         configCell(for: imageListCell, with: indexPath)
         
         //проверка на необходимость подгрузки следующей страницы фотографий
@@ -143,5 +138,30 @@ extension ImagesListViewController: UITableViewDelegate {
         let scale = imageViewWidth / imageWidth
         let cellHeight = photos[indexPath.row].size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
+    }
+}
+
+// MARK: - ImagesListCellDelegate
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoIndex: indexPath.row) {result in
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success(let like):
+                guard let favoriteImage = UIImage(named: like ? "favorites_active" : "favorites_no_active") else {
+                    return
+                }
+                cell.favoritesButton.setImage(favoriteImage, for: .normal)
+                print("CONSOLE func changeLike: изменен лайк для фото",
+                      self.photos[indexPath.row].id,
+                      self.photos[indexPath.row].welcomeDescription ?? "")
+            case .failure(let error):
+                print("CONSOLE func changeLike:", error.localizedDescription)
+            }
+        }
     }
 }
