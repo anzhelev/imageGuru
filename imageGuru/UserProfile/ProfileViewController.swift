@@ -96,7 +96,17 @@ final class ProfileViewController: UIViewController {
     // MARK: - IBAction
     /// действие по нажатию кнопки выхода из профиля
     @objc func logoutButtonAction() {
-        ProfileLogoutService.profileLogoutService.logout()
+        
+        // показываем алерт
+            let alert = AlertModel(title: "Чао какао!",
+                                   text: "Точно хотите выйти?",
+                                   buttonText: "Угу",
+                                   action: {_ in
+                ProfileLogoutService.profileLogoutService.logout()
+            },
+                                   secondButtonText: "Неа"
+            )
+            AlertPresenter.showAlert(alert: alert, on: self)
     }
     
     // MARK: - Private Methods

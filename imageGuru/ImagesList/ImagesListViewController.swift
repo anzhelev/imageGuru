@@ -22,13 +22,18 @@ final class ImagesListViewController: UIViewController {
     private var photos: [Photo] = []
     private let imagesListService = ImagesListService.imagesListService
     private var ImagesListServiceObserver: NSObjectProtocol?
+    private let dateToStringFormatter = DateFormatter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        self.photos = imagesListService.photos
-        self.ImagesListServiceObserver = NotificationCenter.default.addObserver(
+        photos = imagesListService.photos
+        
+        dateToStringFormatter.dateFormat = "dd MMMM yyyy"
+        dateToStringFormatter.locale = Locale(identifier: "ru_RU")
+        
+        ImagesListServiceObserver = NotificationCenter.default.addObserver(
             forName: .imageListUpdated,
             object: nil,
             queue: .main
@@ -69,7 +74,7 @@ final class ImagesListViewController: UIViewController {
     func cleanPhotos() {
         photos.removeAll()
     }
-        
+    
     // MARK: - Private methods
     /// функция установки картинки в ячейку с помощью KingFicher
     private func setImageWithKF(for cell: ImagesListCell, with indexPath: IndexPath) {
@@ -86,7 +91,7 @@ final class ImagesListViewController: UIViewController {
     /// настройка внешнего вида ячейки и компонентов
     private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         setImageWithKF(for: cell, with: indexPath)
-        cell.dateLabel.text = self.photos[indexPath.row].createdAt.convertToStringRu()
+        cell.dateLabel.text = self.dateToStringFormatter.string(from: self.photos[indexPath.row].createdAt ?? Date())
         
         let favoriteImage = UIImage(named: self.photos[indexPath.row].isLiked ? "favorites_active" : "favorites_no_active")
         cell.favoritesButton.setImage(favoriteImage, for: .normal)
@@ -119,8 +124,8 @@ extension ImagesListViewController: UITableViewDataSource {
         configCell(for: imageListCell, with: indexPath)
         
         //проверка на необходимость подгрузки следующей страницы фотографий
-        if indexPath.row + 1 == self.photos.count, imagesListService.task == nil {
-            print("CONSOLE func tableView: Достигнут конец ленты: строка \(indexPath.row + 1) из \(self.photos.count)")
+        if indexPath.row == self.photos.count - 2, imagesListService.task == nil {
+            print("CONSOLE func tableView: Достигнут конец ленты")
             self.imagesListService.fetchPhotosNextPage { }
         }
         return imageListCell

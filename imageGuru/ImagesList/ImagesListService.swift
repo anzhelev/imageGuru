@@ -54,6 +54,7 @@ final class ImagesListService {
     private let dataLoader = DataLoader()
     private var changeLikeTask: URLSessionTask?
     private let photosPerPage = 10
+    private let stringToDateFormatter = ISO8601DateFormatter()
     
     // MARK: - Initializers
     private init() { }
@@ -99,7 +100,7 @@ final class ImagesListService {
                             }
                             let newPhoto = Photo (id: item.id,
                                                   size: CGSize(width: item.width, height: item.height),
-                                                  createdAt: item.createdAt.convertToDate(),
+                                                  createdAt: self.stringToDateFormatter.date(from: item.createdAt),
                                                   welcomeDescription: item.description,
                                                   thumbImageURL: thumbImageURL,
                                                   largeImageURL: largeImageURL,
@@ -113,7 +114,7 @@ final class ImagesListService {
                         }
                     }
                     self.lastLoadedPage = nextPage
-                    print("CONSOLE func fetchPhotosNextPage: Добавлено новых фото:", newPhotosAdded)
+                    print("CONSOLE func fetchPhotosNextPage: Добавлено новых фото: \(newPhotosAdded), итого: \(self.photos.count)")
                     if nextPage == 1 {
                         completion()
                     }
