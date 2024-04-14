@@ -74,15 +74,15 @@ final class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
     }
     
-    // MARK: - Private Methods
     /// функция перехода на экран авторизации
-    private func switchToAuthViewController() {
+    func switchToAuthViewController() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "CustomNavigationController") as UIViewController
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)
     }
     
+    // MARK: - Private Methods
     /// фукнкция отображения алерта об ошибке при авторизации или загрузке профиля
     private func showAlert(message: String) {
         let alert = AlertModel(title: "Что-то пошло не так(",

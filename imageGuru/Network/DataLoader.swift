@@ -23,7 +23,6 @@ final class DataLoader {
         
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        
         let task = URLSession.shared.dataTask(with: request) {data, response, error in
             
             if let error = error {
@@ -51,6 +50,8 @@ final class DataLoader {
                 return
             }
         }
+        
+        task.resume()
         return task
     } 
 }

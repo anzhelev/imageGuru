@@ -48,7 +48,7 @@ final class SingleImageViewController: UIViewController {
     }
     
     // MARK: - Private methods
-    /// функция загрузки полноразмерного фото 
+    /// функция загрузки полноразмерного фото
     private func setImageWithKF() {
         guard let imageURL else {
             return

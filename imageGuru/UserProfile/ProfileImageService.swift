@@ -32,13 +32,14 @@ final class ProfileImageService {
     private (set) var avatarURL: URL? {
         didSet {
             /// уведомляем ProfileViewController об обновлении ссылки на аватар пользователя
-            NotificationCenter.default.post(name: .userImageUrlUpdated,
-                                            object: self,
-                                            userInfo: ["URL": avatarURL ?? ""])
+            if let avatarURL {
+                NotificationCenter.default.post(name: .userImageUrlUpdated,
+                                                object: self,
+                                                userInfo: ["URL": avatarURL])
+            }
         }
     }
     private let dataLoader = DataLoader()
-    private var task: URLSessionTask?
     
     // MARK: - Initializers
     private init() { }
@@ -59,15 +60,16 @@ final class ProfileImageService {
         }
     }
     
+    /// удаляем инфо о ссылке на аватар пользователя
+    func cleanUserAvatarURL () {
+        avatarURL = nil
+    }
+    
     // MARK: - Private Methods
     
     /// функция получения url на фото профиля пользователя
     private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)
-        if task != nil {
-            print("CONSOLE func fetchUserProfileImageURL: Отмена повторного сетевого запроса URL аватара для : \(username).")
-            return
-        }
         
         let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
         guard let request = makeUserProfileImageUrlRequest(token: token, url: userProfileImageRequestUrl) else {
@@ -75,7 +77,7 @@ final class ProfileImageService {
             return
         }
         
-        let task = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
+        _ = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
             switch result {
             case .success(let url):
                 guard let userImageURL = url.profileImage.large
@@ -87,9 +89,6 @@ final class ProfileImageService {
                 completion(.failure(error))
             }
         }
-        
-        self.task = task
-        task.resume()
     }
     
     /// функция сбора запроса для получения картинки профиля пользователя

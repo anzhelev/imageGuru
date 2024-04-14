@@ -113,7 +113,7 @@ final class ImagesListService {
                         }
                     }
                     self.lastLoadedPage = nextPage
-                    print("CONSOLE func fetchPhotosNextPage: Добавлено ноывых фото:", newPhotosAdded)
+                    print("CONSOLE func fetchPhotosNextPage: Добавлено новых фото:", newPhotosAdded)
                     if nextPage == 1 {
                         completion()
                     }
@@ -126,7 +126,6 @@ final class ImagesListService {
         }
         
         self.task = task
-        task.resume()
     }
     
     /// функция изменения статуса фото Лайк/Дизлайк
@@ -160,6 +159,12 @@ final class ImagesListService {
         }
         self.changeLikeTask = changeLikeTask
         changeLikeTask.resume()
+    }
+    
+    /// функция очистки массива фотографий
+    func cleanPhotos() {
+        photos.removeAll()
+        lastLoadedPage = nil
     }
     
     // MARK: - Private methods

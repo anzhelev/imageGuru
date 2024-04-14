@@ -65,6 +65,11 @@ final class ImagesListViewController: UIViewController {
         }
     }
     
+    /// функция очистки массива фотографий
+    func cleanPhotos() {
+        photos.removeAll()
+    }
+        
     // MARK: - Private methods
     /// функция установки картинки в ячейку с помощью KingFicher
     private func setImageWithKF(for cell: ImagesListCell, with indexPath: IndexPath) {

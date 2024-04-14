@@ -23,8 +23,6 @@ final class AuthViewController: UIViewController {
     
     // MARK: - Private Properties
     private let showWebWievControllerSegueIdentifier = "ShowWebView"
-    private let oAuth2Service = OAuth2Service.shared
-    private let splashViewController = SplashViewController()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -52,30 +50,24 @@ final class AuthViewController: UIViewController {
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor.igBlack
     }
-    
-    /// функция запроса токена с передачей авторизационного кода
-    private func fetchOAuthToken(_ code: String) {
-        oAuth2Service.fetchOAuthToken(code) {[weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let token):
-                    self?.oAuth2Service.task = nil
-                    self?.oAuth2Service.lastCode = nil
-                    OAuth2TokenStorage.token = token
-                    self?.splashViewController.userDataCheck()
-                case .failure(let error):
-                    print("CONSOLE func fetchOAuthToken:", error.self)
-                    OAuth2Service.authorizationFailed = true
-                }
-            }
-        }
-    }
 }
 
 // MARK: - WebViewViewControllerDelegate
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        delegate?.authViewController(self)
-        fetchOAuthToken(code)
+        OAuth2Service.oAuth2Service.fetchOAuthToken(code) {[weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(_):
+                    vc.dismiss(animated: true)
+                    if let self {
+                        self.delegate?.authViewController(self)
+                    }
+                case .failure(let error):
+                    print("CONSOLE func fetchOAuthToken:", error.localizedDescription)
+                    vc.dismiss(animated: true)
+                }
+            }
+        }
     }
 }
