@@ -5,6 +5,7 @@
 //  Created by Andrey Zhelev on 04.02.2024.
 //
 import UIKit
+import Kingfisher
 
 final class ImagesListViewController: UIViewController {
     
@@ -18,12 +19,27 @@ final class ImagesListViewController: UIViewController {
     
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let photosName: [String] = Array(0..<20).map{ "\($0)" }
+    private var photos: [Photo] = []
+    private let imagesListService = ImagesListService.imagesListService
+    private var ImagesListServiceObserver: NSObjectProtocol?
+    private let dateToStringFormatter = DateFormatter()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        photos = imagesListService.photos
+        
+        dateToStringFormatter.dateFormat = "dd MMMM yyyy"
+        dateToStringFormatter.locale = Locale(identifier: "ru_RU")
+        
+        ImagesListServiceObserver = NotificationCenter.default.addObserver(
+            forName: .imageListUpdated,
+            object: nil,
+            queue: .main
+        ) {[weak self] _ in
+            self?.updateTableViewAnimated()
+        }
     }
     
     // MARK: - Overrided Methods
@@ -31,24 +47,53 @@ final class ImagesListViewController: UIViewController {
         if segue.identifier == showSingleImageSegueIdentifier {
             if let viewController = segue.destination as? SingleImageViewController,
                let indexPath = sender as? IndexPath {
-                let image = UIImage(named: photosName[indexPath.row])
-                viewController.image = image
+                viewController.imageURL = photos[indexPath.row].largeImageURL
             } else {
                 super.prepare(for: segue, sender: sender)
             }
         }
     }
     
-    // MARK: - Private methods
-    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return
+    // MARK: - Public methods
+    /// перерисовываем таблицу при добавлении новых фото
+    func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            tableView.performBatchUpdates {
+                let indexPaths = (oldCount..<newCount).map { i in
+                    IndexPath(row: i, section: 0)
+                }
+                tableView.insertRows(at: indexPaths, with: .automatic)
+            } completion: { _ in }
         }
-        cell.cellPicture.image = image
-        cell.dateLabel.text = dateToString(Date()-TimeInterval(indexPath.row * 86400))
+    }
+    
+    /// функция очистки массива фотографий
+    func cleanPhotos() {
+        photos.removeAll()
+    }
+    
+    // MARK: - Private methods
+    /// функция установки картинки в ячейку с помощью KingFicher
+    private func setImageWithKF(for cell: ImagesListCell, with indexPath: IndexPath) {
+        cell.cellPicture.kf.indicatorType = .activity
         
-        let isFavorite = indexPath.row % 2 == 0
-        let favoriteImage = isFavorite ? UIImage(named: "favorites_active") : UIImage(named: "favorites_no_active")
+        cell.cellPicture.kf.setImage(
+            with: photos[indexPath.row].thumbImageURL,
+            placeholder: UIImage(named: "picture_load_placeholder")
+        ) {[weak self] _ in
+            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    /// настройка внешнего вида ячейки и компонентов
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        setImageWithKF(for: cell, with: indexPath)
+        cell.dateLabel.text = self.dateToStringFormatter.string(from: self.photos[indexPath.row].createdAt ?? Date())
+        
+        let favoriteImage = UIImage(named: self.photos[indexPath.row].isLiked ? "favorites_active" : "favorites_no_active")
         cell.favoritesButton.setImage(favoriteImage, for: .normal)
         
         // добавляем градиент на поле с датой
@@ -60,19 +105,12 @@ final class ImagesListViewController: UIViewController {
         gradient.colors = [UIColor.igGradientAlpha0.cgColor, UIColor.igGradientAlpha20.cgColor]
         cell.gradientView.layer.insertSublayer(gradient, at: 0)
     }
-    
-    ///  функция форматирования даты в строку
-    private func dateToString(_ date: Date) -> String {
-        let df = DateFormatter()
-        df.dateFormat = "dd MMMM yyyy"
-        return df.string(from: date)
-    }
 }
 
 // MARK: - UITableViewDataSource
 extension ImagesListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -81,7 +119,15 @@ extension ImagesListViewController: UITableViewDataSource {
         guard let imageListCell = cell as? ImagesListCell else {
             return UITableViewCell()
         }
+        imageListCell.delegate = self
+        
         configCell(for: imageListCell, with: indexPath)
+        
+        //проверка на необходимость подгрузки следующей страницы фотографий
+        if indexPath.row == self.photos.count - 2, imagesListService.task == nil {
+            print("CONSOLE func tableView: Достигнут конец ленты")
+            self.imagesListService.fetchPhotosNextPage { }
+        }
         return imageListCell
     }
 }
@@ -93,15 +139,39 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
+        guard self.photos.count > 0 else {
             return 0
         }
-        
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageInsets.left - imageInsets.right
-        let imageWidth = image.size.width
+        let imageWidth = photos[indexPath.row].size.width
         let scale = imageViewWidth / imageWidth
-        let cellHeight = image.size.height * scale + imageInsets.top + imageInsets.bottom
+        let cellHeight = photos[indexPath.row].size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
+    }
+}
+
+// MARK: - ImagesListCellDelegate
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        UIBlockingProgressHUD.show()
+        imagesListService.changeLike(photoIndex: indexPath.row) {[weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            switch result {
+            case .success(let like):
+                guard let favoriteImage = UIImage(named: like ? "favorites_active" : "favorites_no_active") else {
+                    return
+                }
+                cell.favoritesButton.setImage(favoriteImage, for: .normal)
+                print("CONSOLE func changeLike: изменен лайк для фото",
+                      self?.photos[indexPath.row].id ?? "",
+                      self?.photos[indexPath.row].welcomeDescription ?? "")
+            case .failure(let error):
+                print("CONSOLE func changeLike:", error.localizedDescription)
+            }
+        }
     }
 }

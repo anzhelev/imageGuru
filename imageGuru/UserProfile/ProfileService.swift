@@ -65,6 +65,15 @@ final class ProfileService {
         }
     }
     
+    func cleanUserPofile() {
+        profile = Profile(username: "",
+                          firstName: "",
+                          lastName: nil,
+                          loginName: "",
+                          bio: nil
+        )
+    }    
+    
     // MARK: - Private Methods
     /// функция получения общих данных профиля пользователя
     private func fetchUserProfileData(token: String, completion: @escaping (Result<ProfileRequestResult, Error>) -> Void) {
@@ -72,7 +81,7 @@ final class ProfileService {
         
         if task != nil {
             task?.cancel()
-            print("CONSOLE func fetchUserProfileData: Отмена незавершенного сетевого запроса данных профиля.")
+            print("CONSOLE func fetchUserProfileData: Отмена незавершенного запроса данных профиля.")
         }
         
         let userProfileRequestUrl = "https://api.unsplash.com/me"
@@ -91,7 +100,6 @@ final class ProfileService {
         }
         
         self.task = task
-        task.resume()
     }
     
     /// функция сборки запроса для получения данных профиля пользователя

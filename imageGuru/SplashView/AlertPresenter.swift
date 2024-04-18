@@ -12,17 +12,24 @@ struct AlertModel {
     let title: String
     let text: String
     let buttonText: String
-    var completion: ((UIAlertAction) -> Void)? = nil
+    var action: ((UIAlertAction) -> Void)? = nil
+    var secondButtonText: String? = nil
+    var secondButtonAction: ((UIAlertAction) -> Void)? = nil
 }
 
 final class AlertPresenter {
+    /// отображение алерта с одной или двумя кнопками согласно указанным параметрам модели
     static func showAlert(alert model: AlertModel, on screen: UIViewController) {
         let alert = UIAlertController(
             title: model.title,
             message: model.text,
             preferredStyle: .alert)
-        let action = UIAlertAction(title: model.buttonText, style: .default, handler: model.completion)
+        let action = UIAlertAction(title: model.buttonText, style: .default, handler: model.action)
         alert.addAction(action)
+        if let secondButtonText = model.secondButtonText {
+            let secondButtonAction = UIAlertAction(title: secondButtonText, style: .default, handler: model.secondButtonAction)
+            alert.addAction(secondButtonAction)
+        }
         screen.present(alert, animated: true, completion: nil)
     }
 }

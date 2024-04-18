@@ -15,18 +15,12 @@ final class ProfileImageService {
     // MARK: - Private Properties
     /// структура данных ответа сервера на запрос url фото профиля
     private struct ProfileImageURLRequestResult: Decodable {
-        enum RootKeys: String, CodingKey {
-            case profileImage
-        }
-        enum NestedKeys: String, CodingKey {
-            case large
-        }
+        let profileImage: ImageSize
+    }
+    private struct ImageSize: Decodable{
+        let small: URL?
+        let medium: URL?
         let large: URL?
-        init(from decoder: Decoder) throws {
-            let root = try decoder.container(keyedBy: RootKeys.self)
-            let nested = try root.nestedContainer(keyedBy: NestedKeys.self, forKey: .profileImage)
-            large = try nested.decode(URL.self, forKey: .large)
-        }
     }
     
     /// кейсы возможных ошибок при запросе данных профиля пользователя
@@ -38,13 +32,14 @@ final class ProfileImageService {
     private (set) var avatarURL: URL? {
         didSet {
             /// уведомляем ProfileViewController об обновлении ссылки на аватар пользователя
-            NotificationCenter.default.post(name: .userImageUrlUpdated,
-                                            object: self,
-                                            userInfo: ["URL": avatarURL ?? ""])
+            if let avatarURL {
+                NotificationCenter.default.post(name: .userImageUrlUpdated,
+                                                object: self,
+                                                userInfo: ["URL": avatarURL])
+            }
         }
     }
     private let dataLoader = DataLoader()
-    private var task: URLSessionTask?
     
     // MARK: - Initializers
     private init() { }
@@ -65,26 +60,27 @@ final class ProfileImageService {
         }
     }
     
+    /// удаляем инфо о ссылке на аватар пользователя
+    func cleanUserAvatarURL () {
+        avatarURL = nil
+    }
+    
     // MARK: - Private Methods
     
     /// функция получения url на фото профиля пользователя
     private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)
-        if task != nil {
-            print("CONSOLE func fetchUserProfileImageURL: Отмена повторного сетевого запроса URL аватара для : \(username).")
-            return
-        }
         
-        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
+        let userProfileImageRequestUrl = "\(Constants.userProfileImageRequestUrl)/\(username)"
         guard let request = makeUserProfileImageUrlRequest(token: token, url: userProfileImageRequestUrl) else {
             completion(.failure(FetchProfileImageUrlErrors.requestCreationError))
             return
         }
         
-        let task = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
+        _ = dataLoader.objectTask(for: request) {(result: Result<ProfileImageURLRequestResult, Error>) in
             switch result {
             case .success(let url):
-                guard let userImageURL = url.large
+                guard let userImageURL = url.profileImage.large
                 else {
                     return
                 }
@@ -93,9 +89,6 @@ final class ProfileImageService {
                 completion(.failure(error))
             }
         }
-        
-        self.task = task
-        task.resume()
     }
     
     /// функция сбора запроса для получения картинки профиля пользователя

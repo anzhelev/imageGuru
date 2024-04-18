@@ -136,6 +136,9 @@
                                                     </constraints>
                                                     <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                                     <state key="normal" image="favorites_active"/>
+                                                    <connections>
+                                                        <action selector="likeButtonClicked" destination="hHg-nJ-kJB" eventType="touchUpInside" id="3fl-13-hl5"/>
+                                                    </connections>
                                                 </button>
                                             </subviews>
                                             <color key="backgroundColor" name="YP Black"/>

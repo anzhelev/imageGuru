@@ -16,6 +16,7 @@ final class SplashViewController: UIViewController {
     // MARK: - Private Properties
     private let userProfile = ProfileService.profileService
     private let userPofileImage = ProfileImageService.profileImageService
+    private let imagesListService = ImagesListService.imagesListService
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -51,13 +52,17 @@ final class SplashViewController: UIViewController {
                     if self?.userPofileImage.avatarURL == nil {
                         self?.userPofileImage.updateProfileImageURL(userToken: token) { }
                     }
-                    self?.switchToTabBarController()
+                    self?.imagesListService.fetchPhotosNextPage { [weak self] in
+                        self?.switchToTabBarController()
+                    }
                 case false:
                     self?.showAlert(message: "Не удалось получить данные профиля")
                 }
             }
         } else {
-            switchToTabBarController()
+            imagesListService.fetchPhotosNextPage { [weak self] in
+                self?.switchToTabBarController()
+            }
         }
     }
     
@@ -69,22 +74,23 @@ final class SplashViewController: UIViewController {
         window.rootViewController = tabBarController
     }
     
-    // MARK: - Private Methods
     /// функция перехода на экран авторизации
-    private func switchToAuthViewController() {
+    func switchToAuthViewController() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "CustomNavigationController") as UIViewController
         viewController.modalPresentationStyle = .fullScreen
         self.present(viewController, animated: true, completion: nil)
     }
     
+    // MARK: - Private Methods
     /// фукнкция отображения алерта об ошибке при авторизации или загрузке профиля
     private func showAlert(message: String) {
         let alert = AlertModel(title: "Что-то пошло не так(",
                                text: message,
-                               buttonText: "Ok") {[self] UIAlertAction in
+                               buttonText: "Ok",
+                               action: {[self] UIAlertAction in
             switchToAuthViewController()
-        }
+        })
         AlertPresenter.showAlert(alert: alert, on: self)
     }
     
@@ -101,7 +107,6 @@ final class SplashViewController: UIViewController {
             appLogoImageView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
-    
 }
 
 // MARK: - AuthViewControllerDelegate

@@ -62,7 +62,7 @@ final class ProfileViewController: UIViewController {
         self.userLoginLabel = userLoginLabel
         
         let userDescriptionLabel = UILabel()
-        userDescriptionLabel.text = userProfile.profile.bio ?? "пусто"
+        userDescriptionLabel.text = userProfile.profile.bio ?? ""
         userDescriptionLabel.font = UIFont(name: "SFPro-Regular", size: 13)
         userDescriptionLabel.textColor = .igWhite
         userDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -96,11 +96,17 @@ final class ProfileViewController: UIViewController {
     // MARK: - IBAction
     /// действие по нажатию кнопки выхода из профиля
     @objc func logoutButtonAction() {
-        guard let profileImageView, let userNameLabel, let userLoginLabel, let userDescriptionLabel else {return}
-        profileImageView.image = UIImage(named: "user_profile_picture_unautorized")
-        userNameLabel.text = "User Name"
-        userLoginLabel.text = "@user_login"
-        userDescriptionLabel.text = "Description"
+        
+        // показываем алерт
+            let alert = AlertModel(title: "Чао какао!",
+                                   text: "Точно хотите выйти?",
+                                   buttonText: "Угу",
+                                   action: {_ in
+                ProfileLogoutService.profileLogoutService.logout()
+            },
+                                   secondButtonText: "Неа"
+            )
+            AlertPresenter.showAlert(alert: alert, on: self)
     }
     
     // MARK: - Private Methods

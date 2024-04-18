@@ -14,7 +14,7 @@ struct OAuthTokenResponseBody: Decodable {
 final class OAuth2Service {
     
     // MARK: - Public Properties
-    static let shared = OAuth2Service()
+    static let oAuth2Service = OAuth2Service()
     static var authorizationFailed: Bool = false
     var task: URLSessionTask?
     var lastCode: String?    
@@ -41,7 +41,7 @@ final class OAuth2Service {
             return
         } else if task != nil {
             task?.cancel()
-            print("CONSOLE func fetchOAuthToken: Отмена предыдущего незавершенного сетевого запроса.")
+            print("CONSOLE func fetchOAuthToken: Отмена предыдущего незавершенного запроса.")
         }
         
         lastCode = code
@@ -52,16 +52,20 @@ final class OAuth2Service {
         }
         
         let task = dataLoader.objectTask(for: request) {(result: Result<OAuthTokenResponseBody, Error>) in
-            switch result {
-            case .success(let token):
-                completion(.success(token.accessToken))
-            case .failure(let error):
-                completion(.failure(error))
+            DispatchQueue.main.async {
+                OAuth2Service.oAuth2Service.task = nil
+                OAuth2Service.oAuth2Service.lastCode = nil
+                switch result {
+                case .success(let token):
+                    OAuth2TokenStorage.token = token.accessToken
+                    completion(.success(token.accessToken))
+                case .failure(let error):
+                    completion(.failure(error))
+                }
             }
         }
         
         self.task = task
-        task.resume()
     }
     
     // MARK: - Private Methods

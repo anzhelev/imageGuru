@@ -17,6 +17,7 @@
 		D426A9042BBBFDD800B223CA /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D426A9032BBBFDD800B223CA /* TabBarController.swift */; };
 		D42B256F2B714B2000C923FF /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = D42B256E2B714B2000C923FF /* UIColor+Extension.swift */; };
 		D433B0EC2BB9CFCB000A6C8F /* NotificationName+Extention.swift in Sources */ = {isa = PBXBuildFile; fileRef = D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */; };
+		D445192D2BC14E3D0015702F /* ImagesListService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D445192C2BC14E3D0015702F /* ImagesListService.swift */; };
 		D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B83592B7B6349002A5662 /* ImagesListCell.swift */; };
 		D44DEF402B99D0B800A703F2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */; };
 		D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF422B99D34900A703F2 /* WebViewViewController.swift */; };
@@ -30,6 +31,7 @@
 		D4AEA2422B9B474D00C080C8 /* SF Pro.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4AEA2412B9B474D00C080C8 /* SF Pro.ttf */; };
 		D4B89E322BB8B25B007F937E /* AlertPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4B89E312BB8B25B007F937E /* AlertPresenter.swift */; };
 		D4C892A72BAD95C000197B76 /* UIBlockingProgressHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4C892A62BAD95C000197B76 /* UIBlockingProgressHUD.swift */; };
+		D4CCF9FA2BCABCAE0087FA52 /* ProfileLogoutService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4CCF9F92BCABCAE0087FA52 /* ProfileLogoutService.swift */; };
 		D4D28C942BA5AF1E003458D9 /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4D28C932BA5AF1E003458D9 /* SplashViewController.swift */; };
 		D4F1B3482B8B4E4000932BD1 /* SingleImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F1B3472B8B4E4000932BD1 /* SingleImageViewController.swift */; };
 		D4F90A122BA060610042AA47 /* OAuth2Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F90A112BA060610042AA47 /* OAuth2Service.swift */; };
@@ -49,6 +51,7 @@
 		D426A9032BBBFDD800B223CA /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		D42B256E2B714B2000C923FF /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		D433B0EB2BB9CFCB000A6C8F /* NotificationName+Extention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extention.swift"; sourceTree = "<group>"; };
+		D445192C2BC14E3D0015702F /* ImagesListService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListService.swift; sourceTree = "<group>"; };
 		D44B83592B7B6349002A5662 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		D44DEF422B99D34900A703F2 /* WebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
@@ -59,6 +62,7 @@
 		D4AEA2412B9B474D00C080C8 /* SF Pro.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF Pro.ttf"; sourceTree = "<group>"; };
 		D4B89E312BB8B25B007F937E /* AlertPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresenter.swift; sourceTree = "<group>"; };
 		D4C892A62BAD95C000197B76 /* UIBlockingProgressHUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIBlockingProgressHUD.swift; sourceTree = "<group>"; };
+		D4CCF9F92BCABCAE0087FA52 /* ProfileLogoutService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileLogoutService.swift; sourceTree = "<group>"; };
 		D4D28C932BA5AF1E003458D9 /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
 		D4F1B3472B8B4E4000932BD1 /* SingleImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleImageViewController.swift; sourceTree = "<group>"; };
 		D4F90A112BA060610042AA47 /* OAuth2Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAuth2Service.swift; sourceTree = "<group>"; };
@@ -147,6 +151,7 @@
 				D4176E662B6F9FAE0011F179 /* ImagesListViewController.swift */,
 				D44B83592B7B6349002A5662 /* ImagesListCell.swift */,
 				D4F1B3472B8B4E4000932BD1 /* SingleImageViewController.swift */,
+				D445192C2BC14E3D0015702F /* ImagesListService.swift */,
 			);
 			path = ImagesList;
 			sourceTree = "<group>";
@@ -168,6 +173,7 @@
 				D4040BEF2BAECEAC00E965F0 /* ProfileService.swift */,
 				D49D699C2BB297BD00A3BFA7 /* ProfileImageService.swift */,
 				D4A7F1DD2B88AA8100675A89 /* ProfileViewController.swift */,
+				D4CCF9F92BCABCAE0087FA52 /* ProfileLogoutService.swift */,
 			);
 			path = UserProfile;
 			sourceTree = "<group>";
@@ -279,6 +285,8 @@
 				D4A7F1DE2B88AA8100675A89 /* ProfileViewController.swift in Sources */,
 				D4176E672B6F9FAE0011F179 /* ImagesListViewController.swift in Sources */,
 				D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */,
+				D4CCF9FA2BCABCAE0087FA52 /* ProfileLogoutService.swift in Sources */,
+				D445192D2BC14E3D0015702F /* ImagesListService.swift in Sources */,
 				D49D699D2BB297BD00A3BFA7 /* ProfileImageService.swift in Sources */,
 				D4F90A122BA060610042AA47 /* OAuth2Service.swift in Sources */,
 				D408B7052BB6D002004C42C2 /* DataLoader.swift in Sources */,
