@@ -158,7 +158,7 @@ extension ImagesListViewController: ImagesListCellDelegate {
             return
         }
         UIBlockingProgressHUD.show()
-        imagesListService.changeLike(photoIndex: indexPath.row) {result in
+        imagesListService.changeLike(photoIndex: indexPath.row) {[weak self] result in
             UIBlockingProgressHUD.dismiss()
             switch result {
             case .success(let like):
@@ -167,8 +167,8 @@ extension ImagesListViewController: ImagesListCellDelegate {
                 }
                 cell.favoritesButton.setImage(favoriteImage, for: .normal)
                 print("CONSOLE func changeLike: изменен лайк для фото",
-                      self.photos[indexPath.row].id,
-                      self.photos[indexPath.row].welcomeDescription ?? "")
+                      self?.photos[indexPath.row].id ?? "",
+                      self?.photos[indexPath.row].welcomeDescription ?? "")
             case .failure(let error):
                 print("CONSOLE func changeLike:", error.localizedDescription)
             }

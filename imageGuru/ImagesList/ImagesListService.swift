@@ -69,59 +69,61 @@ final class ImagesListService {
         }
         
         let nextPage = (lastLoadedPage ?? 0) + 1
-        guard let request = makeImageServiceRequest(url: "https://api.unsplash.com/photos?page=\(nextPage)&per_page=\(photosPerPage)",
+        guard let request = makeImageServiceRequest(url: "\(Constants.imageServiceRequestUrl)?page=\(nextPage)&per_page=\(photosPerPage)",
                                                     httpMethod: "GET"
         ) else {
             print("CONSOLE func fetchPhotosNextPage: Ошибка сборки запроса страницы с картинками")
             return
         }
         
-        let task = dataLoader.objectTask(for: request) {(result: Result<[PhotoPageResult], Error>) in
+        let task = dataLoader.objectTask(for: request) {[weak self] (result: Result<[PhotoPageResult], Error>) in
             DispatchQueue.main.async {
-                self.task = nil
-                switch result {
-                case .success(let list):
-                    var newPhotosAdded = 0
-                    for item in list {
-                        var itIsNew = true
-                        if self.photos.count > 0 {
-                            for oldPhoto in max(0, self.photos.count - self.photosPerPage) ..< self.photos.count {
-                                if self.photos[oldPhoto].id == item.id {
-                                    itIsNew.toggle()
-                                    break
+                if let self {
+                    self.task = nil
+                    switch result {
+                    case .success(let list):
+                        var newPhotosAdded = 0
+                        for item in list {
+                            var itIsNew = true
+                            if self.photos.count > 0 {
+                                for oldPhoto in max(0, self.photos.count - self.photosPerPage) ..< self.photos.count {
+                                    if self.photos[oldPhoto].id == item.id {
+                                        itIsNew.toggle()
+                                        break
+                                    }
                                 }
                             }
-                        }
-                        if itIsNew {
-                            guard let thumbImageURL = URL(string: item.urls.thumb),
-                                  let largeImageURL = URL(string: item.urls.full) else {
-                                print("CONSOLE func fetchPhotosNextPage: Не удалось загрузить URL фото из ленты")
-                                return
+                            if itIsNew {
+                                guard let thumbImageURL = URL(string: item.urls.thumb),
+                                      let largeImageURL = URL(string: item.urls.full) else {
+                                    print("CONSOLE func fetchPhotosNextPage: Не удалось загрузить URL фото из ленты")
+                                    return
+                                }
+                                let newPhoto = Photo (id: item.id,
+                                                      size: CGSize(width: item.width, height: item.height),
+                                                      createdAt: self.stringToDateFormatter.date(from: item.createdAt),
+                                                      welcomeDescription: item.description,
+                                                      thumbImageURL: thumbImageURL,
+                                                      largeImageURL: largeImageURL,
+                                                      isLiked: item.likedByUser)
+                                
+                                self.photos.append(newPhoto)
+                                newPhotosAdded += 1
+                                NotificationCenter.default.post(name: .imageListUpdated,
+                                                                object: self,
+                                                                userInfo: ["ImageLoaded": newPhoto.id])
                             }
-                            let newPhoto = Photo (id: item.id,
-                                                  size: CGSize(width: item.width, height: item.height),
-                                                  createdAt: self.stringToDateFormatter.date(from: item.createdAt),
-                                                  welcomeDescription: item.description,
-                                                  thumbImageURL: thumbImageURL,
-                                                  largeImageURL: largeImageURL,
-                                                  isLiked: item.likedByUser)
-                            
-                            self.photos.append(newPhoto)
-                            newPhotosAdded += 1
-                            NotificationCenter.default.post(name: .imageListUpdated,
-                                                            object: self,
-                                                            userInfo: ["ImageLoaded": newPhoto.id])
                         }
+                        self.lastLoadedPage = nextPage
+                        print("CONSOLE func fetchPhotosNextPage: Добавлено новых фото: \(newPhotosAdded), итого: \(self.photos.count)")
+                        if nextPage == 1 {
+                            completion()
+                        }
+                        
+                    case .failure(let error):
+                        print("CONSOLE func fetchPhotosNextPage:", error.localizedDescription)
+                        return
                     }
-                    self.lastLoadedPage = nextPage
-                    print("CONSOLE func fetchPhotosNextPage: Добавлено новых фото: \(newPhotosAdded), итого: \(self.photos.count)")
-                    if nextPage == 1 {
-                        completion()
-                    }
-                    
-                case .failure(let error):
-                    print("CONSOLE func fetchPhotosNextPage:", error.localizedDescription)
-                    return
                 }
             }
         }
@@ -137,19 +139,19 @@ final class ImagesListService {
             return
         }
         
-        guard let request = makeImageServiceRequest(url: "https://api.unsplash.com/photos/\(photos[photoIndex].id)/like",
+        guard let request = makeImageServiceRequest(url: "\(Constants.imageServiceRequestUrl)/\(photos[photoIndex].id)/like",
                                                     httpMethod: photos[photoIndex].isLiked ? "DELETE" : "POST"
         ) else {
             print("CONSOLE func changeLike: Ошибка сборки запроса")
             return
         }
         
-        let changeLikeTask = dataLoader.objectTask(for: request) {(result: Result<PhotoLikeModifyResult, Error>) in
+        let changeLikeTask = dataLoader.objectTask(for: request) {[weak self] (result: Result<PhotoLikeModifyResult, Error>) in
             DispatchQueue.main.async {
-                self.changeLikeTask = nil
+                self?.changeLikeTask = nil
                 switch result {
                 case .success(let photoInfo):
-                    self.photos[photoIndex].isLiked = photoInfo.photo.likedByUser
+                    self?.photos[photoIndex].isLiked = photoInfo.photo.likedByUser
                     completion(.success(photoInfo.photo.likedByUser))
                     
                 case .failure(let error):

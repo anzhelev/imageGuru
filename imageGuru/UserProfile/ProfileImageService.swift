@@ -71,7 +71,7 @@ final class ProfileImageService {
     private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)
         
-        let userProfileImageRequestUrl = "https://api.unsplash.com/users/\(username)"
+        let userProfileImageRequestUrl = "\(Constants.userProfileImageRequestUrl)/\(username)"
         guard let request = makeUserProfileImageUrlRequest(token: token, url: userProfileImageRequestUrl) else {
             completion(.failure(FetchProfileImageUrlErrors.requestCreationError))
             return
