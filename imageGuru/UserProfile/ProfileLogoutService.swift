@@ -43,8 +43,6 @@ final class ProfileLogoutService {
         
         // удаляем данные о загруженных фото
         ImagesListService.imagesListService.cleanPhotos()
-        let imageListViewController = ImagesListViewController()
-        imageListViewController.cleanPhotos()
         
         // очищаем кэш KingFicher
         let cache = ImageCache.default

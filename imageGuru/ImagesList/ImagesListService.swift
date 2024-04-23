@@ -110,8 +110,7 @@ final class ImagesListService {
                                 self.photos.append(newPhoto)
                                 newPhotosAdded += 1
                                 NotificationCenter.default.post(name: .imageListUpdated,
-                                                                object: self,
-                                                                userInfo: ["ImageLoaded": newPhoto.id])
+                                                                object: self)
                             }
                         }
                         self.lastLoadedPage = nextPage

@@ -23,6 +23,7 @@
 		D44B835A2B7B6349002A5662 /* ImagesListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44B83592B7B6349002A5662 /* ImagesListCell.swift */; };
 		D44DEF402B99D0B800A703F2 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */; };
 		D44DEF432B99D34900A703F2 /* WebViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D44DEF422B99D34900A703F2 /* WebViewViewController.swift */; };
+		D4508B852BD6DB90008FC83E /* ImagesListPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4508B842BD6DB90008FC83E /* ImagesListPresenter.swift */; };
 		D45ED1292BBB643B0064A0D8 /* SwiftKeychainWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = D45ED1282BBB643B0064A0D8 /* SwiftKeychainWrapper */; };
 		D45EFD5D2BBA098F003217E6 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = D45EFD5C2BBA098F003217E6 /* Kingfisher */; };
 		D4745E072BAB0C7D00F3B034 /* ProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = D4745E062BAB0C7D00F3B034 /* ProgressHUD */; };
@@ -72,6 +73,7 @@
 		D44B83592B7B6349002A5662 /* ImagesListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListCell.swift; sourceTree = "<group>"; };
 		D44DEF3F2B99D0B800A703F2 /* AuthViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		D44DEF422B99D34900A703F2 /* WebViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewViewController.swift; sourceTree = "<group>"; };
+		D4508B842BD6DB90008FC83E /* ImagesListPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagesListPresenter.swift; sourceTree = "<group>"; };
 		D47B9D522BD3CC560004C065 /* WebViewPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewPresenter.swift; sourceTree = "<group>"; };
 		D47B9D542BD3F5430004C065 /* AuthHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthHelper.swift; sourceTree = "<group>"; };
 		D49245A42BA6233400D4FCD8 /* CustomNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift; sourceTree = "<group>"; };
@@ -186,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				D4176E662B6F9FAE0011F179 /* ImagesListViewController.swift */,
+				D4508B842BD6DB90008FC83E /* ImagesListPresenter.swift */,
 				D44B83592B7B6349002A5662 /* ImagesListCell.swift */,
 				D4F1B3472B8B4E4000932BD1 /* SingleImageViewController.swift */,
 				D445192C2BC14E3D0015702F /* ImagesListService.swift */,
@@ -363,6 +366,7 @@
 				D4F90A122BA060610042AA47 /* OAuth2Service.swift in Sources */,
 				D408B7052BB6D002004C42C2 /* DataLoader.swift in Sources */,
 				D4D28C942BA5AF1E003458D9 /* SplashViewController.swift in Sources */,
+				D4508B852BD6DB90008FC83E /* ImagesListPresenter.swift in Sources */,
 				D4F1B3482B8B4E4000932BD1 /* SingleImageViewController.swift in Sources */,
 				D4C892A72BAD95C000197B76 /* UIBlockingProgressHUD.swift in Sources */,
 				D4176E632B6F9FAE0011F179 /* AppDelegate.swift in Sources */,
