@@ -49,11 +49,11 @@ final class SplashViewController: UIViewController {
                 UIBlockingProgressHUD.dismiss()
                 switch result {
                 case true:
-                    if self?.userPofileImage.avatarURL == nil {
-                        self?.userPofileImage.updateProfileImageURL(userToken: token) { }
-                    }
                     self?.imagesListService.fetchPhotosNextPage { [weak self] in
                         self?.switchToTabBarController()
+                        if self?.userPofileImage.avatarURL == nil {
+                            self?.userPofileImage.updateProfileImageURL(userToken: token) { }
+                        }
                     }
                 case false:
                     self?.showAlert(message: "Не удалось получить данные профиля")

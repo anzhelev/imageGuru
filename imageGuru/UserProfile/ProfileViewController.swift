@@ -6,20 +6,23 @@
 //
 import Foundation
 import UIKit
+import Kingfisher
 
 public protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     var profileImageView: UIImageView? { get set }
-    var profileImageUnautorized: UIImage? { get set }
     func configureUIElements(userName: String, userLogin: String, userBio: String)
+    func updateUserImage(url: URL)
 }
 
 final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
-
+    
     // MARK: - Public Properties
     var presenter: ProfilePresenterProtocol?
     var profileImageView: UIImageView?
-    var profileImageUnautorized: UIImage?
+    
+    // MARK: - Private Properties
+    private var profileImagePlaceHolder: UIImage?
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -32,12 +35,12 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
     /// настраиваем внешний вид экрана и графические элементы
     func configureUIElements(userName: String, userLogin: String, userBio: String) {
         view.backgroundColor = .igBlack
-        let profileImageUnautorized = UIImage(named: "user_profile_picture_unautorized")
-        let profileImageView = UIImageView(image: profileImageUnautorized)
+        let profileImage = UIImage(named: "user_profile_picture_unautorized")
+        let profileImageView = UIImageView(image: profileImage)
         profileImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(profileImageView)
         self.profileImageView = profileImageView
-        self.profileImageUnautorized = profileImageUnautorized
+        self.profileImagePlaceHolder = profileImage
         
         let userNameLabel = UILabel()
         userNameLabel.text = userName
@@ -84,6 +87,23 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         ])
     }
     
+    /// загружаем и обновляем аватар с помощью KingFisher
+    func updateUserImage(url: URL) {
+        guard let imageView = self.profileImageView else {
+            return
+        }
+        imageView.kf.indicatorType = .activity
+        let processor = RoundCornerImageProcessor(
+            cornerRadius: 10000,
+            backgroundColor: .igBlack
+        )
+        imageView.kf.setImage(
+            with: url,
+            placeholder: profileImagePlaceHolder,
+            options: [.processor(processor)]
+        )
+    }
+    
     // MARK: - IBAction
     /// действие по нажатию кнопки выхода из профиля
     @objc func logoutButtonAction() {
@@ -92,8 +112,8 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         let alert = AlertModel(title: "Чао какао!",
                                text: "Точно хотите выйти?",
                                buttonText: "Угу",
-                               action: {_ in
-            ProfileLogoutService.profileLogoutService.logout()
+                               action: {[weak self] _ in
+            self?.presenter?.profileLogout()
         },
                                secondButtonText: "Неа"
         )

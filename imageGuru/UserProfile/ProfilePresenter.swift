@@ -5,11 +5,11 @@
 //  Created by Andrey Zhelev on 22.04.2024.
 //
 import Foundation
-import Kingfisher
 
 public protocol ProfilePresenterProtocol: AnyObject {
     var view: ProfileViewControllerProtocol? { get set }
-    func viewDidLoad()    
+    func viewDidLoad()
+    func profileLogout()
 }
 
 final class ProfilePresenter: ProfilePresenterProtocol {
@@ -17,6 +17,7 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     // MARK: - Public Properties
     weak var view: ProfileViewControllerProtocol?
     
+    // MARK: - Private Properties
     private let userProfile = ProfileService.profileService
     private let userPofileImageService = ProfileImageService.profileImageService
     private var profileImageServiceObserver: NSObjectProtocol?
@@ -25,34 +26,19 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     func viewDidLoad() {
         profileUpdate()
         if let url = userPofileImageService.avatarURL {
-            updateUserImage(url: url)
+            view?.updateUserImage(url: url)
         }
         else {
             userImageUrlUpdateMonitor()
         }
     }
     
-    // MARK: - Private Methods
-    /// функция загрузки и установки аватара с помощью KingFisher
-    private func updateUserImage(url: URL) {
-        guard let profileImageView = view?.profileImageView,
-              let profileImageUnautorized = view?.profileImageUnautorized else {
-            return
-        }
-        
-        profileImageView.kf.indicatorType = .activity
-        let processor = RoundCornerImageProcessor(
-            cornerRadius: 10000,
-            backgroundColor: .igBlack
-        )
-        
-        profileImageView.kf.setImage(
-            with: url,
-            placeholder: profileImageUnautorized,
-            options: [.processor(processor)]
-        )
+    /// запускаем процедуру логаута
+    func profileLogout() {
+        ProfileLogoutService.profileLogoutService.logout()
     }
     
+    // MARK: - Private Methods
     ///  заполняем профиль пользователя
     private func profileUpdate() {
         var userName: String
@@ -70,17 +56,16 @@ final class ProfilePresenter: ProfilePresenterProtocol {
     
     /// отслеживаем загрузку  аватара и запускаем его установку
     private func userImageUrlUpdateMonitor() {
-        self.profileImageServiceObserver = NotificationCenter.default.addObserver(
+        profileImageServiceObserver = NotificationCenter.default.addObserver(
             forName: .userImageUrlUpdated,
             object: nil,
-            queue: .main
-        ) {[weak self] notification in
-            let urlAsString = String(describing: notification.userInfo?["URL"] ?? "")
-            guard let url = URL(string: urlAsString) else {
-                print("CONSOLE func userImageUrlUpdateMonitor: Ошибка получения URL от NotificationCenter")
-                return
+            queue: .main) {[weak self] notification in
+                let urlAsString = String(describing: notification.userInfo?["URL"] ?? "")
+                guard let url = URL(string: urlAsString) else {
+                    print("CONSOLE func userImageUrlUpdateMonitor: Ошибка получения URL от NotificationCenter")
+                    return
+                }
+                self?.view?.updateUserImage(url: url)
             }
-            self?.updateUserImage(url: url)
-        }
     }
 }
