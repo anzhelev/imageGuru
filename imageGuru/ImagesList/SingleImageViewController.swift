@@ -76,7 +76,7 @@ final class SingleImageViewController: UIViewController {
                         },
                                                secondButtonText: "Не надо"
                         )
-                        AlertPresenter.showAlert(alert: alert, on: self)
+                        _ = AlertPresenter.showAlert(alert: alert, on: self)
                     }
                 }
             }

@@ -19,7 +19,7 @@ struct AlertModel {
 
 final class AlertPresenter {
     /// отображение алерта с одной или двумя кнопками согласно указанным параметрам модели
-    static func showAlert(alert model: AlertModel, on screen: UIViewController) {
+    static func showAlert(alert model: AlertModel, on screen: UIViewController) -> UIAlertController? {
         let alert = UIAlertController(
             title: model.title,
             message: model.text,
@@ -31,5 +31,6 @@ final class AlertPresenter {
             alert.addAction(secondButtonAction)
         }
         screen.present(alert, animated: true, completion: nil)
+        return alert
     }
 }

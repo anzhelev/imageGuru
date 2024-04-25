@@ -4,12 +4,14 @@
 //
 //  Created by Andrey Zhelev on 23.04.2024.
 //
-
 import XCTest
 @testable import imageGuru
 
 final class ProfilePresenterSpy: ProfilePresenterProtocol {
-    func profileLogout() {}
+    var logoutIsInitiated: Bool = false
+    func profileLogout() {
+        logoutIsInitiated.toggle()
+    }
     func userImageUrlUpdateMonitor() {}
     var viewDidLoadCalled: Bool = false
     var view: ProfileViewControllerProtocol?
@@ -19,6 +21,9 @@ final class ProfilePresenterSpy: ProfilePresenterProtocol {
 }
 
 final class ProfileViewControllerSpy: ProfileViewControllerProtocol {
+    var logoutAlert: UIAlertController?
+    
+    var userLogoutButton: UIButton?
     var profileImageDidSet: Bool = false
     func updateUserImage(url: URL) {
         profileImageDidSet.toggle()
@@ -76,5 +81,21 @@ final class ProfileViewTests: XCTestCase {
         
         //then
         XCTAssertTrue(viewController.profileImageDidSet)
+    }
+    
+    func testLogoutButtonAction() {
+        //given
+        let viewController = ProfileViewController()
+        let presenter = ProfilePresenterSpy()
+        viewController.presenter = presenter
+        presenter.view = viewController
+        
+        //when
+        viewController.configureUIElements(userName: "User", userLogin: "User", userBio: "")
+        viewController.userLogoutButton?.sendActions(for: .allTouchEvents)
+        
+        //then
+        let alert = viewController.logoutAlert
+        XCTAssertTrue(alert != nil)
     }
 }

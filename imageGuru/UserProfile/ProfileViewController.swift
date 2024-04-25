@@ -11,6 +11,8 @@ import Kingfisher
 public protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
     var profileImageView: UIImageView? { get set }
+    var userLogoutButton: UIButton? { get set }
+    var logoutAlert: UIAlertController? { get set }
     func configureUIElements(userName: String, userLogin: String, userBio: String)
     func updateUserImage(url: URL)
 }
@@ -20,6 +22,8 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
     // MARK: - Public Properties
     var presenter: ProfilePresenterProtocol?
     var profileImageView: UIImageView?
+    var userLogoutButton: UIButton?
+    var logoutAlert: UIAlertController?
     
     // MARK: - Private Properties
     private var profileImagePlaceHolder: UIImage?
@@ -64,10 +68,11 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         view.addSubview(userDescriptionLabel)
         
         let buttonImage = UIImage(named: "logoutButton")
-        let labelDisableButton = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(self.logoutButtonAction))
-        labelDisableButton.tintColor = .igRed
-        labelDisableButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(labelDisableButton)
+        let userLogoutButton = UIButton.systemButton(with: buttonImage!, target: self, action: #selector(self.logoutButtonAction))
+        userLogoutButton.tintColor = .igRed
+        userLogoutButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(userLogoutButton)
+        self.userLogoutButton = userLogoutButton
         
         NSLayoutConstraint.activate([
             profileImageView.heightAnchor.constraint(equalToConstant: 70),
@@ -80,10 +85,10 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
             userLoginLabel.topAnchor.constraint(equalTo: userNameLabel.bottomAnchor, constant: 8),
             userDescriptionLabel.leadingAnchor.constraint(equalTo: userLoginLabel.leadingAnchor),
             userDescriptionLabel.topAnchor.constraint(equalTo: userLoginLabel.bottomAnchor, constant: 8),
-            labelDisableButton.heightAnchor.constraint(equalToConstant: 44),
-            labelDisableButton.widthAnchor.constraint(equalToConstant: 44),
-            labelDisableButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
-            labelDisableButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -14)
+            userLogoutButton.heightAnchor.constraint(equalToConstant: 44),
+            userLogoutButton.widthAnchor.constraint(equalToConstant: 44),
+            userLogoutButton.centerYAnchor.constraint(equalTo: profileImageView.centerYAnchor),
+            userLogoutButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -14)
         ])
     }
     
@@ -117,6 +122,6 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         },
                                secondButtonText: "Неа"
         )
-        AlertPresenter.showAlert(alert: alert, on: self)
+        self.logoutAlert = AlertPresenter.showAlert(alert: alert, on: self)
     }
 }

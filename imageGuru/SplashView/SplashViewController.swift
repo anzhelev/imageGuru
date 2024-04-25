@@ -91,7 +91,7 @@ final class SplashViewController: UIViewController {
                                action: {[self] UIAlertAction in
             switchToAuthViewController()
         })
-        AlertPresenter.showAlert(alert: alert, on: self)
+        _ = AlertPresenter.showAlert(alert: alert, on: self)
     }
     
     /// настраиваем внешний вид экрана и графические элементы
