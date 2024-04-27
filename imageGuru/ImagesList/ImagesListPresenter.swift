@@ -13,11 +13,9 @@ protocol ImagesListPresenterProtocol: AnyObject {
     func cleanPhotos()
     func getPhotosCount() -> Int
     func getSingleImageUrl(for row: Int) -> URL
-    func changeLike(for cell: ImagesListCell, in table: UITableView)
-    func getFormattedDate(for cellIndex: IndexPath) -> String
+    func changeLike(for cell: ImagesListCell, in tableView: UITableView)
     func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage?
-    func getCellHeight(for indexPath: IndexPath, in table: UITableView) -> CGFloat
-    func setImageWithKF(for cell: ImagesListCell, with indexPath: IndexPath, in table: UITableView)
+    func getCellHeight(indexPath: IndexPath, tableBoundsWidth: CGFloat) -> CGFloat
     func prepareNewCell(for tableView: UITableView, with indexPath: IndexPath, on viewController: ImagesListCellDelegate) -> UITableViewCell
 }
 
@@ -25,17 +23,12 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     
     // MARK: - Public Properties
     weak var view: ImagesListViewControllerProtocol?
+    let imagesListService = ImagesListService.imagesListService
     
     // MARK: - Private Properties
     private let dateToStringFormatter = DateFormatter()
-    private let imagesListService = ImagesListService.imagesListService
     private var photos: [Photo] = []
     private var ImagesListServiceObserver: NSObjectProtocol?
-    
-    // MARK: - Initializers
-    init(view: ImagesListViewControllerProtocol) {
-        self.view = view
-    }
     
     // MARK: - Public Methods
     func viewDidLoad() {
@@ -57,6 +50,16 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         photos.removeAll()
     }
     
+    /// запускаем обновление таблицы при получении новых фото
+    func updateTable () {
+        let oldCount = photos.count
+        let newCount = imagesListService.photos.count
+        photos = imagesListService.photos
+        if oldCount != newCount {
+            self.view?.updateTableViewAnimated(with: oldCount..<newCount)
+        }
+    }
+    
     /// получаем текущее количество фото в массиве
     func getPhotosCount() -> Int {
         return photos.count
@@ -68,8 +71,8 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     /// меняем статус Лайк фото по нажатию на соответствующую кнопку
-    func changeLike (for cell: ImagesListCell, in table: UITableView) {
-        guard let indexPath = table.indexPath(for: cell) else {
+    func changeLike (for cell: ImagesListCell, in tableView: UITableView) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
             return
         }
         UIBlockingProgressHUD.show()
@@ -80,7 +83,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
                 guard let favoriteImage = UIImage(named: like ? "favorites_active" : "favorites_no_active") else {
                     return
                 }
-                cell.favoritesButton.setImage(favoriteImage, for: .normal)
+                cell.setFavoriteButtonImage(image: favoriteImage)
                 print("CONSOLE func changeLike: изменен лайк для фото",
                       self?.photos[indexPath.row].id ?? "",
                       self?.photos[indexPath.row].welcomeDescription ?? "")
@@ -90,39 +93,22 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         }
     }
     
-    /// получаем строку с датой создания фото в нужном формате
-    func getFormattedDate(for cellIndex: IndexPath) -> String {
-        return dateToStringFormatter.string(from: self.photos[cellIndex.row].createdAt ?? Date())
-    }
-    
     /// настраиваем внешний вид кнопки Лайк в соответствии с текущим статусом
-    func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage? {
-        return UIImage(named: self.photos[cellIndex.row].isLiked ? "favorites_active" : "favorites_no_active")
+    func getFavoriteButtonImage(for indexPath: IndexPath) -> UIImage? {
+        return UIImage(named: self.photos[indexPath.row].isLiked ? "favorites_active" : "favorites_no_active")
     }
     
     /// функция расчета высоты ячейки по соотношению сторон фото
-    func getCellHeight(for indexPath: IndexPath, in table: UITableView) -> CGFloat {
+    func getCellHeight(indexPath: IndexPath, tableBoundsWidth: CGFloat) -> CGFloat {
         guard photos.count > 0 else {
             return 0
         }
         let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = table.bounds.width - imageInsets.left - imageInsets.right
+        let imageViewWidth = tableBoundsWidth - imageInsets.left - imageInsets.right
         let imageWidth = photos[indexPath.row].size.width
         let scale = imageViewWidth / imageWidth
         let cellHeight = photos[indexPath.row].size.height * scale + imageInsets.top + imageInsets.bottom
         return cellHeight
-    }
-    
-    /// функция установки картинки в ячейку с помощью KingFicher
-    func setImageWithKF(for cell: ImagesListCell, with indexPath: IndexPath, in table: UITableView) {
-        cell.cellPicture.kf.indicatorType = .activity
-        
-        cell.cellPicture.kf.setImage(
-            with: photos[indexPath.row].thumbImageURL,
-            placeholder: UIImage(named: "picture_load_placeholder")
-        ) {[weak table] _ in
-            table?.reloadRows(at: [indexPath], with: .automatic)
-        }
     }
     
     /// готовим для отображения новую ячейку с фото
@@ -133,10 +119,12 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             return UITableViewCell()
         }
         imageListCell.delegate = viewController
-        imageListCell.dateLabel.text = getFormattedDate(for: indexPath)
-        imageListCell.favoritesButton.setImage(getFavoriteButtonImage(for: indexPath), for: .normal)
-        setImageWithKF(for: imageListCell, with: indexPath, in: tableView)
-        self.view?.setGradientLayer(for: imageListCell)
+        let photo = photos[indexPath.row]
+        imageListCell.configure(with: photo.thumbImageURL,
+                                date: dateToStringFormatter.string(from: photo.createdAt ?? Date()),
+                                favoriteButtonImage: getFavoriteButtonImage(for: indexPath)) {[weak tableView] in
+            tableView?.reloadRows(at: [indexPath], with: .automatic)
+        }
         
         //проверка на необходимость подгрузки следующей страницы фотографий
         if indexPath.row == self.photos.count - 2, imagesListService.task == nil {
@@ -144,15 +132,5 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
             self.imagesListService.fetchPhotosNextPage { }
         }
         return imageListCell
-    }
-    
-    /// запускаем обновление таблицы при получении новых фото
-    func updateTable () {
-        let oldCount = photos.count
-        let newCount = imagesListService.photos.count
-        photos = imagesListService.photos
-        if oldCount != newCount {
-            self.view?.updateTableViewAnimated(with: oldCount..<newCount)
-        }
     }
 }

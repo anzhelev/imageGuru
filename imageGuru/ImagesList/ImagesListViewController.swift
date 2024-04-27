@@ -7,9 +7,7 @@
 import UIKit
 
 protocol ImagesListViewControllerProtocol: AnyObject {
-    var presenter: ImagesListPresenterProtocol? { get set }
     func updateTableViewAnimated(with rangeOfCells: Range <Int>)
-    func setGradientLayer(for cell: ImagesListCell)
 }
 
 final class ImagesListViewController: UIViewController & ImagesListViewControllerProtocol {
@@ -23,18 +21,17 @@ final class ImagesListViewController: UIViewController & ImagesListViewControlle
     @IBOutlet private var tableView: UITableView!
     
     // MARK: - Public Properties
-    lazy var presenter: ImagesListPresenterProtocol? = ImagesListPresenter(view: self)
+    var presenter: ImagesListPresenterProtocol?
     
     // MARK: - Private Properties
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let imagesListService = ImagesListService.imagesListService
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
-        presenter  = ImagesListPresenter(view: self)
+        presenter  = ImagesListPresenter()
+        presenter?.view = self
         presenter?.viewDidLoad()
     }
     
@@ -60,17 +57,6 @@ final class ImagesListViewController: UIViewController & ImagesListViewControlle
             tableView.insertRows(at: indexPaths, with: .automatic)
         } completion: { _ in }
     }
-    
-    /// настройка градиента для лейбла с датой создания фото
-    func setGradientLayer(for cell: ImagesListCell) {
-        cell.gradientView.layer.masksToBounds = true
-        cell.gradientView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
-        cell.gradientView.layer.cornerRadius = 16
-        let gradient = CAGradientLayer()
-        gradient.frame = cell.gradientView.bounds
-        gradient.colors = [UIColor.igGradientAlpha0.cgColor, UIColor.igGradientAlpha20.cgColor]
-        cell.gradientView.layer.insertSublayer(gradient, at: 0)
-    }
 }
 
 // MARK: - UITableViewDataSource
@@ -94,7 +80,7 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return presenter?.getCellHeight(for: indexPath, in: tableView) ?? 0
+        return presenter?.getCellHeight(indexPath: indexPath, tableBoundsWidth: tableView.bounds.width) ?? 0
     }
 }
 
