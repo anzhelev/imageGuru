@@ -5,7 +5,6 @@
 //  Created by Andrey Zhelev on 25.02.2024.
 //
 import UIKit
-import Kingfisher
 
 final class SingleImageViewController: UIViewController {
     

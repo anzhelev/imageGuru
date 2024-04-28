@@ -4,7 +4,6 @@
 //
 //  Created by Andrey Zhelev on 25.04.2024.
 //
-
 import XCTest
 @testable import imageGuru
 
@@ -27,17 +26,14 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
     func viewDidLoad() {
         viewDidLoadCalled.toggle()
     }
-    func cleanPhotos() {
-    }
-    
+    func cleanPhotos() { }
     func getPhotosCount() -> Int {
         0
     }
     func getSingleImageUrl(for row: Int) -> URL {
         return Constants.defaultBaseURL!
     }
-    func changeLike(for cell: imageGuru.ImagesListCell, in table: UITableView) {
-    }
+    func changeLike(for cell: imageGuru.ImagesListCell, in table: UITableView) { }
     func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage? {
         UIImage()
     }
@@ -50,7 +46,6 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
         return UITableViewCell()
     }
 }
-
 
 final class ImagesListTests: XCTestCase {
     
@@ -76,9 +71,11 @@ final class ImagesListTests: XCTestCase {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 10)
- 
+        
+        // тесты объединены в одну функцию, чтобы не дублировать сетевые запросы через imagesListService
+        
         // проверка запуска updateTable в Presenter по уведомлению от imagesListService и работу функциии getPhotosCount
-        var photoCount = presenter.getPhotosCount()
+        let photoCount = presenter.getPhotosCount()
         XCTAssertEqual(photoCount , 10)
         
         // проверка работы функции getSingleImageUrl

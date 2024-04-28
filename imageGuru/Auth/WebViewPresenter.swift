@@ -18,8 +18,10 @@ final class WebViewPresenter: WebViewPresenterProtocol {
     // MARK: - Public Properties
     weak var view: WebViewViewControllerProtocol?
     
-    var authHelper: AuthHelperProtocol
+    // MARK: - Private Properties
+    private var authHelper: AuthHelperProtocol
     
+    // MARK: - Initializers
     init(authHelper: AuthHelperProtocol) {
         self.authHelper = authHelper
     }

@@ -5,8 +5,8 @@
 //  Created by Andrey Zhelev on 13.04.2024.
 //
 import Foundation
-import WebKit
 import Kingfisher
+import WebKit
 
 final class ProfileLogoutService {
     

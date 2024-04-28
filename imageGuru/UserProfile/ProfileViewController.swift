@@ -5,8 +5,8 @@
 //  Created by Andrey Zhelev on 23.02.2024.
 //
 import Foundation
-import UIKit
 import Kingfisher
+import UIKit
 
 public protocol ProfileViewControllerProtocol: AnyObject {
     var presenter: ProfilePresenterProtocol? { get set }
@@ -72,6 +72,7 @@ final class ProfileViewController: UIViewController & ProfileViewControllerProto
         userLogoutButton.tintColor = .igRed
         userLogoutButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userLogoutButton)
+        userLogoutButton.accessibilityIdentifier = "logoutButton"
         self.userLogoutButton = userLogoutButton
         
         NSLayoutConstraint.activate([

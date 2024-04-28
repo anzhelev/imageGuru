@@ -72,7 +72,7 @@ final class ProfileService {
                           loginName: "",
                           bio: nil
         )
-    }    
+    }
     
     // MARK: - Private Methods
     /// функция получения общих данных профиля пользователя

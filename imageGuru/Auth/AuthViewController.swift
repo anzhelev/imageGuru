@@ -5,7 +5,6 @@
 //  Created by Andrey Zhelev on 07.03.2024.
 //
 import UIKit
-import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func authViewController(_ vc: AuthViewController)

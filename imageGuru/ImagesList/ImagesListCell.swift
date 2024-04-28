@@ -40,7 +40,6 @@ final class ImagesListCell: UITableViewCell {
         setGradientLayer()
         
         cellPicture.kf.indicatorType = .activity
-        
         cellPicture.kf.setImage(
             with: imageUrl,
             placeholder: UIImage(named: "picture_load_placeholder")
