@@ -9,6 +9,14 @@ import XCTest
 final class imageGuruUITests: XCTestCase {
     private let app = XCUIApplication()
     
+    // введите ваши данные для авторизации
+    enum User: String {
+        case email = "mailfor@unsplash.com"
+        case password = "Y0uRpAs5w0rD"
+        case profileName = "Your Name"
+        case login = "@yourlogin"
+    }
+
     override func setUpWithError() throws {
         continueAfterFailure = false
         
@@ -27,20 +35,20 @@ final class imageGuruUITests: XCTestCase {
         XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
         
         loginTextField.tap()
-        loginTextField.typeText("e-mail") // ! сюда подставить свой е-мейл
-        app.children(matching: .window).element(boundBy: 0).tap()
+        loginTextField.typeText(User.email.rawValue)
+        app.descendants(matching: .window).element(boundBy: 0).tap()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 7))
         
         passwordTextField.tap()
-        passwordTextField.typeText("******") // ! сюда подставить свой пароль
-        app.children(matching: .window).element(boundBy: 0).tap()
+        passwordTextField.typeText(User.password.rawValue)
+        app.descendants(matching: .window).element(boundBy: 0).tap()
         
         webView.buttons["Login"].tap()
         
         let tablesQuery = app.tables
-        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
+        let cell = tablesQuery.descendants(matching: .cell).element(boundBy: 0)
         
         XCTAssertTrue(cell.waitForExistence(timeout: 7))
     }
@@ -73,13 +81,11 @@ final class imageGuruUITests: XCTestCase {
         
         _ = image.waitForExistence(timeout: 5)
         
-        // Zoom in
-        image.pinch(withScale: 3, velocity: 1) // zoom in
-        // Zoom out
+        image.pinch(withScale: 3, velocity: 1)
+        
         image.pinch(withScale: 0.5, velocity: -1)
         
         let navBackButtonWhiteButton = app.buttons["backwardButton"]
-        print("CONSOLE: ", app.buttons)
         navBackButtonWhiteButton.tap()
     }
     
@@ -91,9 +97,8 @@ final class imageGuruUITests: XCTestCase {
         
         sleep(2)
         
-        // ! сюда подставить свои данные пользователя
-        XCTAssertTrue(app.staticTexts["User Name"].exists)
-        XCTAssertTrue(app.staticTexts["@userlogin"].exists)
+        XCTAssertTrue(app.staticTexts[User.profileName.rawValue].exists)
+        XCTAssertTrue(app.staticTexts[User.login.rawValue].exists)
         
         sleep(1)
         

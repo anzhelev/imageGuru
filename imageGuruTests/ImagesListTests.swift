@@ -33,7 +33,7 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
     func getSingleImageUrl(for row: Int) -> URL {
         return Constants.defaultBaseURL!
     }
-    func changeLike(for cell: imageGuru.ImagesListCell, in table: UITableView) { }
+    func changeLike(for cell: ImagesListCell, in table: UITableView) { }
     func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage? {
         UIImage()
     }
@@ -59,37 +59,75 @@ final class ImagesListTests: XCTestCase {
         XCTAssertTrue(presenter.viewDidLoadCalled)
     }
     
-    func testViewPresenterMethods() {
+    func testGetPhotoCount() {
+        let presenter = ImagesListPresenter()
+        presenter.imagesListService.addMockPhotosForTests()
+        presenter.viewDidLoad()
+                
+        XCTAssertEqual(presenter.getPhotosCount(), 5)
+    }
+    
+    func testCleanPhotos() {
+        let presenter = ImagesListPresenter()
+        presenter.imagesListService.addMockPhotosForTests()
+        presenter.viewDidLoad()
+
+        presenter.cleanPhotos()
+        XCTAssertEqual(presenter.getPhotosCount() , 0)
+    }
+    
+    func testUpdateTableViewAnimatedIsCalled() {
         let viewController = ImagesListViewControllerSpy()
         let presenter = ImagesListPresenter()
         viewController.presenter = presenter
         presenter.view = viewController
-        
         presenter.viewDidLoad()
-        let expectation = self.expectation(description: "Ждем завершения работы fetchPhotosNextPage")
-        presenter.imagesListService.fetchPhotosNextPage {
-            expectation.fulfill()
-        }
-        wait(for: [expectation], timeout: 10)
-        
-        // тесты объединены в одну функцию, чтобы не дублировать сетевые запросы через imagesListService
-        
-        // проверка запуска updateTable в Presenter по уведомлению от imagesListService и работу функциии getPhotosCount
-        let photoCount = presenter.getPhotosCount()
-        XCTAssertEqual(photoCount , 10)
-        
-        // проверка работы функции getSingleImageUrl
-        var singleImageUrl: URL?
-        singleImageUrl = presenter.getSingleImageUrl(for: 0)
-        XCTAssert(singleImageUrl != nil)
-        
-        // проверка работы функции cleanPhotos
+
         presenter.cleanPhotos()
-        XCTAssertEqual(presenter.getPhotosCount() , 0)
+        presenter.imagesListService.addMockPhotosForTests()
+        NotificationCenter.default.post(name: .imageListUpdated,
+                                        object: self)
         
-        // Проверяем, происходит ли запуск updateTableViewAnimated на viewController при обновлении массива фото
-        presenter.updateTable()
         XCTAssert(viewController.updateTableViewAnimatedIsCalled)
     }
-}
+    
+    func testGetSingleImageUrl() {
+        let presenter = ImagesListPresenter()
+        presenter.imagesListService.addMockPhotosForTests()
+        presenter.viewDidLoad()
+        
+        var singleImageUrl: URL?
+        singleImageUrl = presenter.getSingleImageUrl(for: 0)
+        
+        XCTAssert(singleImageUrl != nil)
+    }
+    
+    func testGetCellHeight() {
+        let presenter = ImagesListPresenter()
+        presenter.imagesListService.addMockPhotosForTests()
+        presenter.viewDidLoad()
+        let indexPath = IndexPath(row: 1, section: 0)
+        let photoWidth = presenter.imagesListService.photos[indexPath.row].size.width
+        let photoHeight = presenter.imagesListService.photos[indexPath.row].size.height
+        let insets = presenter.cellImageInsets
 
+        let cellHeight = presenter.getCellHeight(
+            indexPath: indexPath,
+            tableBoundsWidth: photoWidth + insets.left + insets.right
+        )
+        
+        XCTAssertEqual(cellHeight, photoHeight + insets.top + insets.bottom)
+    }
+    
+    func testGetFavoriteButtonImage() {
+        let presenter = ImagesListPresenter()
+        presenter.imagesListService.addMockPhotosForTests()
+        presenter.viewDidLoad()
+        
+        let indexPath = IndexPath(row: 3, section: 0)
+        let photoLikeStatus = presenter.imagesListService.photos[indexPath.row].isLiked
+        let image = UIImage(named: photoLikeStatus ? "favorites_active" : "favorites_no_active")
+        
+        XCTAssertEqual(presenter.getFavoriteButtonImage(for: indexPath), image)
+    }
+}

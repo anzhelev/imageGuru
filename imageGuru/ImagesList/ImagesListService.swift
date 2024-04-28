@@ -162,6 +162,22 @@ final class ImagesListService {
         changeLikeTask.resume()
     }
     
+    /// !!! только для тестов. добавляем фейковые записи о фото в массив
+    func addMockPhotosForTests() {
+        guard let url = Constants.defaultBaseURL else {
+            return
+        }
+        photos = []
+        for index in 0 ..< 5 {
+            photos.append(Photo(id: "\(index)",
+                                size: CGSize(width: 100, height: 200),
+                                thumbImageURL: url,
+                                largeImageURL: url,
+                                isLiked: index % 2 == 0)
+            )
+        }
+    }
+    
     /// функция очистки массива фотографий
     func cleanPhotos() {
         photos.removeAll()

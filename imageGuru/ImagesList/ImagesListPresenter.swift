@@ -24,6 +24,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     // MARK: - Public Properties
     weak var view: ImagesListViewControllerProtocol?
     let imagesListService = ImagesListService.imagesListService
+    let cellImageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
     
     // MARK: - Private Properties
     private let dateToStringFormatter = DateFormatter()
@@ -103,11 +104,10 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         guard photos.count > 0 else {
             return 0
         }
-        let imageInsets = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
-        let imageViewWidth = tableBoundsWidth - imageInsets.left - imageInsets.right
+        let imageViewWidth = tableBoundsWidth - cellImageInsets.left - cellImageInsets.right
         let imageWidth = photos[indexPath.row].size.width
         let scale = imageViewWidth / imageWidth
-        let cellHeight = photos[indexPath.row].size.height * scale + imageInsets.top + imageInsets.bottom
+        let cellHeight = photos[indexPath.row].size.height * scale + cellImageInsets.top + cellImageInsets.bottom
         return cellHeight
     }
     
