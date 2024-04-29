@@ -38,12 +38,16 @@ final class imageGuruUITests: XCTestCase {
         loginTextField.typeText(User.email.rawValue)
         app.toolbars.buttons["Done"].tap()
         
+        sleep(3)
+        
         let passwordTextField = webView.descendants(matching: .secureTextField).element
         XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         
         passwordTextField.tap()
+        
+        sleep(1)
+        
         passwordTextField.typeText(User.password.rawValue)
-        app.toolbars.buttons["Done"].tap()
         
         webView.buttons["Login"].tap()
         
