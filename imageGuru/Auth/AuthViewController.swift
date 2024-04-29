@@ -5,7 +5,6 @@
 //  Created by Andrey Zhelev on 07.03.2024.
 //
 import UIKit
-import ProgressHUD
 
 protocol AuthViewControllerDelegate: AnyObject {
     func authViewController(_ vc: AuthViewController)
@@ -33,10 +32,15 @@ final class AuthViewController: UIViewController {
     // MARK: - Overrided Methods
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == showWebWievControllerSegueIdentifier {
-            guard
-                let webViewViewController = segue.destination as? WebViewViewController
-            else { fatalError("Failed to prepare for \(showWebWievControllerSegueIdentifier)") }
-            webViewViewController.delegate = self
+            guard let webViewViewController = segue.destination as? WebViewViewController else {
+                assertionFailure("Failed to prepare for \(showWebWievControllerSegueIdentifier)")
+                return
+            }
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+            webViewViewController.presenter = webViewPresenter
+            webViewPresenter.view = webViewViewController
+            webViewViewController.delegate = self            
         } else {
             super.prepare(for: segue, sender: sender)
         }

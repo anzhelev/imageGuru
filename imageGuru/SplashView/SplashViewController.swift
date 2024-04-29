@@ -49,11 +49,11 @@ final class SplashViewController: UIViewController {
                 UIBlockingProgressHUD.dismiss()
                 switch result {
                 case true:
-                    if self?.userPofileImage.avatarURL == nil {
-                        self?.userPofileImage.updateProfileImageURL(userToken: token) { }
-                    }
                     self?.imagesListService.fetchPhotosNextPage { [weak self] in
                         self?.switchToTabBarController()
+                        if self?.userPofileImage.avatarURL == nil {
+                            self?.userPofileImage.updateProfileImageURL(userToken: token) { }
+                        }
                     }
                 case false:
                     self?.showAlert(message: "Не удалось получить данные профиля")
@@ -91,7 +91,7 @@ final class SplashViewController: UIViewController {
                                action: {[self] UIAlertAction in
             switchToAuthViewController()
         })
-        AlertPresenter.showAlert(alert: alert, on: self)
+        _ = AlertPresenter.showAlert(alert: alert, on: self)
     }
     
     /// настраиваем внешний вид экрана и графические элементы

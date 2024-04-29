@@ -66,7 +66,6 @@ final class ProfileImageService {
     }
     
     // MARK: - Private Methods
-    
     /// функция получения url на фото профиля пользователя
     private func fetchUserProfileImageURL(username: String, token: String, completion: @escaping (Result<URL, Error>) -> Void) {
         assert(Thread.isMainThread)

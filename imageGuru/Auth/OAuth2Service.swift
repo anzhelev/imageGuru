@@ -4,7 +4,6 @@
 //
 //  Created by Andrey Zhelev on 12.03.2024.
 //
-
 import Foundation
 
 struct OAuthTokenResponseBody: Decodable {
@@ -17,7 +16,7 @@ final class OAuth2Service {
     static let oAuth2Service = OAuth2Service()
     static var authorizationFailed: Bool = false
     var task: URLSessionTask?
-    var lastCode: String?    
+    var lastCode: String?
     
     // MARK: - Private Properties
     /// кейсы возможных ошибок при запросе токена
@@ -64,7 +63,6 @@ final class OAuth2Service {
                 }
             }
         }
-        
         self.task = task
     }
     

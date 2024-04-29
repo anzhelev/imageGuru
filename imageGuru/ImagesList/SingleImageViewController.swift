@@ -5,7 +5,6 @@
 //  Created by Andrey Zhelev on 25.02.2024.
 //
 import UIKit
-import Kingfisher
 
 final class SingleImageViewController: UIViewController {
     
@@ -76,7 +75,7 @@ final class SingleImageViewController: UIViewController {
                         },
                                                secondButtonText: "Не надо"
                         )
-                        AlertPresenter.showAlert(alert: alert, on: self)
+                        _ = AlertPresenter.showAlert(alert: alert, on: self)
                     }
                 }
             }
