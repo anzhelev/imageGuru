@@ -33,10 +33,10 @@ final class ImagesListCell: UITableViewCell {
         delegate?.imageListCellDidTapLike(self)
     }
     
-    func configure(with imageUrl: URL, date: String, favoriteButtonImage: UIImage?, completion: @escaping () -> Void) {
+    func configure(with imageUrl: URL, date: String, isLiked: Bool, completion: @escaping () -> Void) {
         
         dateLabel.text = date
-        setFavoriteButtonImage(image: favoriteButtonImage)
+        setFavoriteButtonImage(isLiked: isLiked)
         setGradientLayer()
         
         cellPicture.kf.indicatorType = .activity
@@ -48,7 +48,10 @@ final class ImagesListCell: UITableViewCell {
         }
     }
     
-    func setFavoriteButtonImage(image: UIImage?) {
+    func setFavoriteButtonImage(isLiked: Bool) {
+        guard let image = UIImage(named: isLiked ? "favorites_active" : "favorites_no_active") else {
+            return
+        }
         favoritesButton.setImage(image, for: .normal)
     }
     

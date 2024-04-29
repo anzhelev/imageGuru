@@ -36,14 +36,14 @@ final class imageGuruUITests: XCTestCase {
         
         loginTextField.tap()
         loginTextField.typeText(User.email.rawValue)
-        app.descendants(matching: .window).element(boundBy: 0).tap()
+        app.toolbars.buttons["Done"].tap()
         
         let passwordTextField = webView.descendants(matching: .secureTextField).element
-        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 7))
+        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
         
         passwordTextField.tap()
         passwordTextField.typeText(User.password.rawValue)
-        app.descendants(matching: .window).element(boundBy: 0).tap()
+        app.toolbars.buttons["Done"].tap()
         
         webView.buttons["Login"].tap()
         
@@ -100,7 +100,7 @@ final class imageGuruUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts[User.profileName.rawValue].exists)
         XCTAssertTrue(app.staticTexts[User.login.rawValue].exists)
         
-        sleep(1)
+        sleep(3)
         
         app.buttons["logoutButton"].tap()
         

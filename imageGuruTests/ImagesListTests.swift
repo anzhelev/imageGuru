@@ -17,6 +17,7 @@ final class ImagesListViewControllerSpy: ImagesListViewControllerProtocol {
     func updateTableViewAnimated(with rangeOfCells: Range<Int>) {
         updateTableViewAnimatedIsCalled.toggle()
     }
+    func activityIndicator(show: Bool) { }
 }
 
 final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
@@ -33,7 +34,7 @@ final class ImagesListPresenterSpy: ImagesListPresenterProtocol {
     func getSingleImageUrl(for row: Int) -> URL {
         return Constants.defaultBaseURL!
     }
-    func changeLike(for cell: ImagesListCell, in table: UITableView) { }
+    func changeLike(for indexPath: IndexPath, completion: @escaping (Bool) -> Void) { }
     func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage? {
         UIImage()
     }
@@ -117,17 +118,5 @@ final class ImagesListTests: XCTestCase {
         )
         
         XCTAssertEqual(cellHeight, photoHeight + insets.top + insets.bottom)
-    }
-    
-    func testGetFavoriteButtonImage() {
-        let presenter = ImagesListPresenter()
-        presenter.imagesListService.addMockPhotosForTests()
-        presenter.viewDidLoad()
-        
-        let indexPath = IndexPath(row: 3, section: 0)
-        let photoLikeStatus = presenter.imagesListService.photos[indexPath.row].isLiked
-        let image = UIImage(named: photoLikeStatus ? "favorites_active" : "favorites_no_active")
-        
-        XCTAssertEqual(presenter.getFavoriteButtonImage(for: indexPath), image)
     }
 }

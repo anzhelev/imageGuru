@@ -7,6 +7,7 @@
 import UIKit
 
 protocol ImagesListViewControllerProtocol: AnyObject {
+    func activityIndicator(show: Bool)
     func updateTableViewAnimated(with rangeOfCells: Range <Int>)
 }
 
@@ -57,6 +58,11 @@ final class ImagesListViewController: UIViewController & ImagesListViewControlle
             tableView.insertRows(at: indexPaths, with: .automatic)
         } completion: { _ in }
     }
+    
+    /// показываем или скрываем индикатор активности
+    func activityIndicator(show: Bool) {
+        show ? UIBlockingProgressHUD.show() : UIBlockingProgressHUD.dismiss()
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -87,6 +93,11 @@ extension ImagesListViewController: UITableViewDelegate {
 // MARK: - ImagesListCellDelegate
 extension ImagesListViewController: ImagesListCellDelegate {
     func imageListCellDidTapLike(_ cell: ImagesListCell) {
-        presenter?.changeLike(for: cell, in: tableView)
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        presenter?.changeLike(for: indexPath) {[weak cell] isLiked in
+            cell?.setFavoriteButtonImage(isLiked: isLiked)
+        }
     }
 }

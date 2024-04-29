@@ -13,8 +13,7 @@ protocol ImagesListPresenterProtocol: AnyObject {
     func cleanPhotos()
     func getPhotosCount() -> Int
     func getSingleImageUrl(for row: Int) -> URL
-    func changeLike(for cell: ImagesListCell, in tableView: UITableView)
-    func getFavoriteButtonImage(for cellIndex: IndexPath) -> UIImage?
+    func changeLike (for indexPath: IndexPath, completion: @escaping (Bool) -> Void)
     func getCellHeight(indexPath: IndexPath, tableBoundsWidth: CGFloat) -> CGFloat
     func prepareNewCell(for tableView: UITableView, with indexPath: IndexPath, on viewController: ImagesListCellDelegate) -> UITableViewCell
 }
@@ -34,7 +33,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     // MARK: - Public Methods
     func viewDidLoad() {
         dateToStringFormatter.dateFormat = "dd MMMM yyyy"
-        dateToStringFormatter.locale = Locale(identifier: "ru_RU")
         photos = imagesListService.photos
         
         ImagesListServiceObserver = NotificationCenter.default.addObserver(
@@ -72,19 +70,14 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
     }
     
     /// меняем статус Лайк фото по нажатию на соответствующую кнопку
-    func changeLike (for cell: ImagesListCell, in tableView: UITableView) {
-        guard let indexPath = tableView.indexPath(for: cell) else {
-            return
-        }
-        UIBlockingProgressHUD.show()
+    func changeLike (for indexPath: IndexPath, completion: @escaping (Bool) -> Void) {
+        
+        view?.activityIndicator(show: true)
         imagesListService.changeLike(photoIndex: indexPath.row) {[weak self] result in
-            UIBlockingProgressHUD.dismiss()
+            self?.view?.activityIndicator(show: false)
             switch result {
             case .success(let like):
-                guard let favoriteImage = UIImage(named: like ? "favorites_active" : "favorites_no_active") else {
-                    return
-                }
-                cell.setFavoriteButtonImage(image: favoriteImage)
+                completion(like)
                 print("CONSOLE func changeLike: изменен лайк для фото",
                       self?.photos[indexPath.row].id ?? "",
                       self?.photos[indexPath.row].welcomeDescription ?? "")
@@ -92,11 +85,6 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
                 print("CONSOLE func changeLike:", error.localizedDescription)
             }
         }
-    }
-    
-    /// настраиваем внешний вид кнопки Лайк в соответствии с текущим статусом
-    func getFavoriteButtonImage(for indexPath: IndexPath) -> UIImage? {
-        return UIImage(named: self.photos[indexPath.row].isLiked ? "favorites_active" : "favorites_no_active")
     }
     
     /// функция расчета высоты ячейки по соотношению сторон фото
@@ -122,7 +110,7 @@ final class ImagesListPresenter: ImagesListPresenterProtocol {
         let photo = photos[indexPath.row]
         imageListCell.configure(with: photo.thumbImageURL,
                                 date: dateToStringFormatter.string(from: photo.createdAt ?? Date()),
-                                favoriteButtonImage: getFavoriteButtonImage(for: indexPath)) {[weak tableView] in
+                                isLiked: photo.isLiked) {[weak tableView] in
             tableView?.reloadRows(at: [indexPath], with: .automatic)
         }
         
