@@ -4,7 +4,6 @@
 //
 //  Created by Andrey Zhelev on 31.03.2024.
 //
-
 import Foundation
 
 extension Notification.Name {
